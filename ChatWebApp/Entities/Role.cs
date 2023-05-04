@@ -1,8 +1,8 @@
 ﻿namespace ChatAppAPI.Entities
 {
-    public enum Role
+    public class Role
     {
-        Admin,
-        User
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }
