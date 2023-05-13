@@ -36,6 +36,7 @@ namespace ChatAppAPI.Data
                 .WithMany()
                 .HasForeignKey(uc => uc.ContactId)
                 .OnDelete(DeleteBehavior.NoAction);
+            //modelBuilder.Entity<Message>().on
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }

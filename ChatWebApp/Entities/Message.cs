@@ -9,7 +9,7 @@
 
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
-        public User IAuditable.CreatedBy { get; set; }
-        public User IAuditable.ModifiedBy { get; set; }
+        public User? CreatedBy { get; set; }
+        public User? ModifiedBy { get; set; }
     }
 }

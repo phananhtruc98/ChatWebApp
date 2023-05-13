@@ -68,7 +68,8 @@ namespace ChatAppAPI.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ConversationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NickName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,7 +117,11 @@ namespace ChatAppAPI.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ConversationParticipantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ConversationParticipantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -127,6 +132,16 @@ namespace ChatAppAPI.Migrations
                         principalTable: "ConversationParticipants",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Messages_Users_ModifiedById",
+                        column: x => x.ModifiedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -143,6 +158,16 @@ namespace ChatAppAPI.Migrations
                 name: "IX_Messages_ConversationParticipantId",
                 table: "Messages",
                 column: "ConversationParticipantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_CreatedById",
+                table: "Messages",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ModifiedById",
+                table: "Messages",
+                column: "ModifiedById");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserContacts_ContactId",

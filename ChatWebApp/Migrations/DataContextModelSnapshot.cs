@@ -48,6 +48,10 @@ namespace ChatAppAPI.Migrations
                     b.Property<Guid>("ConversationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("NickName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -73,9 +77,25 @@ namespace ChatAppAPI.Migrations
                     b.Property<Guid>("ConversationParticipantId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationParticipantId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("ModifiedById");
 
                     b.ToTable("Messages");
                 });
@@ -182,7 +202,19 @@ namespace ChatAppAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ChatAppAPI.Entities.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("ChatAppAPI.Entities.User", "ModifiedBy")
+                        .WithMany()
+                        .HasForeignKey("ModifiedById");
+
                     b.Navigation("ConversationParticipant");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("ModifiedBy");
                 });
 
             modelBuilder.Entity("ChatAppAPI.Entities.User", b =>

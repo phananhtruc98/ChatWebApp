@@ -20,9 +20,9 @@ namespace ChatAppAPI.Entities
         public Role Role { get; set; }
 
 
-        public List<ConversationParticipant> ConversationParticipants { get; } = new();
+        public List<ConversationParticipant>? ConversationParticipants { get; } = new();
 
-        public List<UserContact> Contacts { get; set; }
+        public List<UserContact>? Contacts { get; set; }
 
     }
 }
