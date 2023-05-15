@@ -9,7 +9,7 @@ namespace ChatAppAPI.Entities
         public string? FullName { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public bool? isFemale { get; set; }
-        public string? Email { get; set; }
+        public string Email { get; set; }
         public string? Avatar { get; set; }
         public string? Bio { get; set; }
 

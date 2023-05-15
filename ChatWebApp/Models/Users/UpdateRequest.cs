@@ -1,23 +1,18 @@
 ﻿using ChatAppAPI.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ChatAppAPI.Models.Users
 {
     public class UpdateRequest
     {
-        public string? Title { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-
-        public int RoleId { get; set; }
-
-        [EmailAddress]
+        public string? FullName { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public bool? isFemale { get; set; }
         public string? Email { get; set; }
-
         public string? Avatar { get; set; }
         public string? Bio { get; set; }
-        // treat empty string as null for password fields to 
-        // make them optional in front end apps
+
         private string? _password;
         [MinLength(6)]
         public string? Password

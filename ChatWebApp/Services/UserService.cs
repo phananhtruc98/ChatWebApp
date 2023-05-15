@@ -1,90 +1,82 @@
-﻿//using AutoMapper;
-//using ChatAppAPI.Entities;
-//using ChatAppAPI.Helpers;
-//using ChatAppAPI.Models.Users;
-//using ChatAppAPI.Repositories;
-//using BCrypt.Net;
-//namespace ChatAppAPI.Services
-//{
-//    public interface IUserService
-//    {
-//        Task<IEnumerable<User>> GetAll();
-//        Task<User> GetById(int id);
-//        Task Create(CreateRequest model);
-//        Task Update(int id, UpdateRequest model);
-//        Task Delete(int id);
-//    }
+﻿using AutoMapper;
+using ChatAppAPI.Data;
+using ChatAppAPI.Entities;
+using ChatAppAPI.Helpers;
+using ChatAppAPI.Models.Users;
+namespace ChatAppAPI.Services
+{
+    public interface IUserService
+    {
+        IEnumerable<User> GetAll();
+        User GetById(Guid id);
+        void Register(CreateRequest model);
+        void Update(Guid id, UpdateRequest model);
+        void Delete(Guid id);
+    }
 
-//    public class UserService : IUserService
-//    {
-//        private IUserRepository _userRepository;
-//        private readonly IMapper _mapper;
+    public class UserService : IUserService
+    {
+        private DataContext _context; 
+        private readonly IMapper _mapper;
 
-//        public UserService(
-//            IUserRepository userRepository,
-//            IMapper mapper)
-//        {
-//            _userRepository = userRepository;
-//            _mapper = mapper;
-//        }
+        public UserService(DataContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-//        public async Task<IEnumerable<User>> GetAll()
-//        {
-//            return await _userRepository.GetAll();
-//        }
+        public IEnumerable<User> GetAll()
+        {
+            return _context.Users;
+        }
 
-//        public async Task<User> GetById(int id)
-//        {
-//            var user = await _userRepository.GetById(id);
+        public User GetById(Guid id)
+        {
+            return getUser(id);
+        }
 
-//            if (user == null)
-//                throw new KeyNotFoundException("User not found");
+        private User getUser(Guid id)
+        {
+            var user = _context.Users.Find(id);
+            if (user == null) throw new KeyNotFoundException("User not found");
+            return user;
+        }
+        public void Update(Guid id, UpdateRequest model)
+        {
+            var user = getUser(id);
 
-//            return user;
-//        }
+            // validate
+            if (model.Email != user.Email && _context.Users.Any(x => x.Email == model.Email))
+                throw new AppException("Username '" + model.Email + "' is already taken");
 
-//        public async Task Create(CreateRequest model)
-//        {
-//            // validate
-//            if (await _userRepository.GetByEmail(model.Email!) != null)
-//                throw new AppException("User with the email '" + model.Email + "' already exists");
+            // hash password if it was entered
+            if (!string.IsNullOrEmpty(model.Password))
+                user.PasswordHash = PasswordHelper.Hash(model.Password);
 
-//            // map model to new user object
-//            var user = _mapper.Map<User>(model);
+            // copy model to user and save
+            _mapper.Map(model, user);
+            _context.Users.Update(user);
+            _context.SaveChanges();
+        }
 
-//            // hash password
-//            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+        public void Delete(Guid id)
+        {
+            var user = getUser(id);
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+        }
+        public void Register(CreateRequest model)
+        {
 
-//            // save user
-//            await _userRepository.Create(user);
-//        }
+            if (_context.Users.Any(x => x.Email == model.Email))
+                throw new AppException("Username '" + model.Email + "' is already taken");
 
-//        public async Task Update(int id, UpdateRequest model)
-//        {
-//            var user = await _userRepository.GetById(id);
+            var user = _mapper.Map<User>(model);
 
-//            if (user == null)
-//                throw new KeyNotFoundException("User not found");
-
-//            // validate
-//            var emailChanged = !string.IsNullOrEmpty(model.Email) && user.Email != model.Email;
-//            if (emailChanged && await _userRepository.GetByEmail(model.Email!) != null)
-//                throw new AppException("User with the email '" + model.Email + "' already exists");
-
-//            // hash password if it was entered
-//            if (!string.IsNullOrEmpty(model.Password))
-//                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
-
-//            // copy model props to user
-//            _mapper.Map(model, user);
-
-//            // save user
-//            await _userRepository.Update(user);
-//        }
-
-//        public async Task Delete(int id)
-//        {
-//            await _userRepository.Delete(id);
-//        }
-//    }
-//}
+            user.PasswordHash = PasswordHelper.Hash(model.Password);
+            user.RoleId = 1;
+            _context.Users.Add(user);
+            _context.SaveChanges();
+        }
+    }
+}

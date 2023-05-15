@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAppAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("[controller]")]
     public class UserContactController : ControllerBase
     {
         private readonly DataContext _context;

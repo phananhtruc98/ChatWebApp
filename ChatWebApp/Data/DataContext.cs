@@ -25,7 +25,7 @@ namespace ChatAppAPI.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserContact>().HasKey( e => e.Id);
+            modelBuilder.Entity<UserContact>().HasKey(e => e.Id);
             modelBuilder.Entity<UserContact>()
                 .HasOne(uc => uc.User)
                 .WithMany(u => u.Contacts)
@@ -36,7 +36,10 @@ namespace ChatAppAPI.Data
                 .WithMany()
                 .HasForeignKey(uc => uc.ContactId)
                 .OnDelete(DeleteBehavior.NoAction);
-            //modelBuilder.Entity<Message>().on
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Authenticated User" },
+                new Role { Id = 2, Name = "Admin" });
+
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
