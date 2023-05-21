@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs';
+import { first, tap } from 'rxjs';
+import { LoginUser } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
-
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.sass'],
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.sass'],
 })
-export class RegisterComponent {
+export class LoginComponent {
   form!: FormGroup;
   loading = false;
   submitted = false;
@@ -18,14 +18,13 @@ export class RegisterComponent {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private accountService: AccountService // , // private alertService: AlertService
+    private accountService: AccountService //private alertService: AlertService
   ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      fullName: ['', Validators.required],
       email: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', Validators.required],
     });
   }
 
@@ -47,17 +46,20 @@ export class RegisterComponent {
 
     this.loading = true;
     this.accountService
-      .register(this.form.value)
-      .pipe(first())
-      .subscribe({
-        next: () => {
-          //this.alertService.success('Registration successful', { keepAfterRouteChange: true });
-          this.router.navigate(['../login'], { relativeTo: this.route });
-        },
-        error: (error: any) => {
-          //this.alertService.error(error);
-          this.loading = false;
-        },
+      .login(this.form.value)
+      .pipe(
+        tap(
+          // Log the result or error
+          {
+            next: (data) => console.log(data),
+            error: (error) => {
+              console.log(error);
+            },
+          }
+        )
+      )
+      .subscribe(() => {
+        this.loading = false;
       });
   }
 }

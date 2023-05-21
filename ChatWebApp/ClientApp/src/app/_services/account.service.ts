@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { User } from '../_models/user';
+import { LoginUser, User } from '../_models/user';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -22,20 +22,8 @@ export class AccountService {
     return this.userSubject.value;
   }
 
-  login(username: string, password: string) {
-    return this.http
-      .post<User>(`${environment.apiUrl}/users/authenticate`, {
-        username,
-        password,
-      })
-      .pipe(
-        map((user) => {
-          // store user details and jwt token in local storage to keep user logged in between page refreshes
-          localStorage.setItem('user', JSON.stringify(user));
-          this.userSubject.next(user);
-          return user;
-        })
-      );
+  login(user: LoginUser) {
+    return this.http.post(`${environment.apiUrl}/users/login`, user);
   }
 
   logout() {

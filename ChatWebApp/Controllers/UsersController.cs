@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChatAppAPI.Controllers
 {
-    [Authorization.Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsersController : ControllerBase
@@ -46,6 +46,14 @@ namespace ChatAppAPI.Controllers
         {
             _userService.Register(model);
             return Ok(new { message = "Registration successful" });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("login")]
+        public async Task<ActionResult<ResponseLoginViewModel>> Login(LoginRequest user)
+        {
+            var result = _userService.Login(user.Email, user.Password);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

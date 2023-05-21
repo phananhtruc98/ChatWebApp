@@ -15,7 +15,8 @@ namespace ChatAppAPI.Authorization
     }
     public class JwtUtils : IJwtUtils
     {
-        private readonly AppSettings _appSettings; 
+        private readonly AppSettings _appSettings;
+
         public JwtUtils(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings.Value;
