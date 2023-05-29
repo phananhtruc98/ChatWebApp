@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatAppAPI.Dtos.UserContact;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Models.Users;
 
@@ -9,10 +10,10 @@ namespace ChatAppAPI.Helpers
         public AutoMapperProfile()
         {
             // CreateRequest -> User
-            CreateMap<CreateRequest, User>();
+            CreateMap<UserForCreationDto, User>();
 
             // UpdateRequest -> User
-            CreateMap<UpdateRequest, User>()
+            CreateMap<UserForUpdateDto, User>()
                 .ForAllMembers(x => x.Condition(
                     (src, dest, prop) =>
                     {
@@ -23,6 +24,10 @@ namespace ChatAppAPI.Helpers
                         return true;
                     }
                 ));
+
+
+            CreateMap<User, UserContactDto>();
+            //CreateMap<UserContactDto, UserContact>().ForMember(d => d.Contact, opt => opt.MapFrom(s => s));
         }
     }
 }

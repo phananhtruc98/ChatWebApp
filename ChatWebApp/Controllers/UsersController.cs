@@ -1,13 +1,18 @@
 ﻿using ChatAppAPI.Authorization;
+using ChatAppAPI.Dtos.File;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Models.Users;
 using ChatAppAPI.Services;
+using Imagekit.Models;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using System.Security.Claims;
+using System;
+using System.IO;
 namespace ChatAppAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsersController : ControllerBase
@@ -25,7 +30,14 @@ namespace ChatAppAPI.Controllers
             var users = _userService.GetAll();
             return Ok(users);
         }
-
+        [Route("suggestions")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetSuggestions()
+        {
+            var userId = HttpContext.User.FindFirstValue("userId");
+            var suggestions = _userService.GetSuggestions(userId);
+            return Ok(suggestions);
+        }
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(Guid id)
         {
@@ -34,7 +46,7 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, UpdateRequest model)
+        public async Task<IActionResult> PutUser(Guid id, UserForUpdateDto model)
         {
             _userService.Update(id, model);
             return Ok(new { message = "User updated successfully" });
@@ -42,7 +54,7 @@ namespace ChatAppAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public async Task<ActionResult<User>> PostUser(CreateRequest model)
+        public async Task<ActionResult<User>> PostUser(UserForCreationDto model)
         {
             _userService.Register(model);
             return Ok(new { message = "Registration successful" });
@@ -50,7 +62,7 @@ namespace ChatAppAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult<ResponseLoginViewModel>> Login(LoginRequest user)
+        public async Task<ActionResult<string>> Login(UserLoginDto user)
         {
             var result = _userService.Login(user.Email, user.Password);
             return Ok(result);
@@ -61,6 +73,14 @@ namespace ChatAppAPI.Controllers
         {
             _userService.Delete(id);
             return Ok(new { message = "User deleted successfully" });
+        }
+
+        [Route("avatar")]
+        [HttpPost]
+        public async Task<ActionResult> PostFile(IFormFile file)
+        {
+            var rs = await _userService.SaveAvatar(file);
+            return Ok(rs);
         }
     }
 }

@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
 using Microsoft.AspNetCore.Authorization;
+using ChatAppAPI.Services;
+using ChatAppAPI.Dtos.UserContact;
+using System.Security.Claims;
 
 namespace ChatAppAPI.Controllers
 {
@@ -17,31 +20,36 @@ namespace ChatAppAPI.Controllers
     public class UserContactController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly IUserService _userService;
+        private readonly IUserContactService _userContactService;
 
-        public UserContactController(DataContext context)
+        public UserContactController(DataContext context, IUserService userService, IUserContactService userContactService)
         {
             _context = context;
+            _userService = userService;
+            _userContactService = userContactService;
         }
 
         // GET: api/UserContact
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserContact>>> GetUserContacts()
+        public async Task<ActionResult<IEnumerable<UserContactDto>>> GetUserContacts()
         {
-          if (_context.UserContacts == null)
-          {
-              return NotFound();
-          }
-            return await _context.UserContacts.ToListAsync();
+            var userId = HttpContext.User.FindFirstValue("userId");
+            if(userId != null)
+            {
+                return Ok(_userContactService.GetUserContactDtos(userId));
+            }
+            return NoContent();
         }
 
         // GET: api/UserContact/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserContact>> GetUserContact(Guid id)
         {
-          if (_context.UserContacts == null)
-          {
-              return NotFound();
-          }
+            if (_context.UserContacts == null)
+            {
+                return NotFound();
+            }
             var userContact = await _context.UserContacts.FindAsync(id);
 
             if (userContact == null)
@@ -85,17 +93,21 @@ namespace ChatAppAPI.Controllers
 
         // POST: api/UserContact
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize]
         [HttpPost]
-        public async Task<ActionResult<UserContact>> PostUserContact(UserContact userContact)
+        public async Task<ActionResult<UserContact>> PostUserContact(UserContactForCreationDto userContactRequest)
         {
-          if (_context.UserContacts == null)
-          {
-              return Problem("Entity set 'DataContext.UserContacts'  is null.");
-          }
-            _context.UserContacts.Add(userContact);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetUserContact", new { id = userContact.Id }, userContact);
+            var contact = _userService.GetById(userContactRequest.ContactId);
+            if (contact != null)
+            {
+                var userContact = new UserContact();
+                userContact.UserId = Guid.Parse(HttpContext.User.FindFirstValue("userId"));
+                userContact.ContactId = contact.Id;
+                _context.UserContacts.Add(userContact);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return NoContent();
         }
 
         // DELETE: api/UserContact/5

@@ -1,13 +1,21 @@
 <!-- nav -->
 <nav class="navbar navbar-expand navbar-dark bg-dark px-3" *ngIf="user">
-  <div class="navbar-nav">
-      <a class="nav-item nav-link" routerLink="/" routerLinkActive="active" >Home</a>
-      <a class="nav-item nav-link" routerLink="/users" routerLinkActive="active">Users</a>
-      <button class="btn btn-link nav-item nav-link" (click)="logout()">Logout</button>
-  </div>
+    <div class="navbar-nav">
+        <a class="nav-item nav-link" routerLink="/" routerLinkActive="active">Home</a>
+        <a class="nav-item nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
+        <a class="nav-item nav-link" routerLink="/contacts" routerLinkActive="active">Contacts</a>
+        <a class="nav-item nav-link" routerLink="/suggestions" routerLinkActive=" active ">Suggestions</a>
+        <button class="btn btn-link nav-item nav-link " (click)="logout() ">Logout</button>
+        <button class="btn btn-link nav-item nav-link " *ngIf="user ">{{user.fullName}}</button>
+    </div>
 </nav>
-
+<nav class="navbar navbar-expand navbar-dark bg-dark px-3 " *ngIf="!user ">
+    <div class="navbar-nav ">
+        <a class="nav-item nav-link " routerLink="/register " routerLinkActive="active ">Register</a>
+        <a class="nav-item nav-link " routerLink="/login " routerLinkActive="active ">Login</a>
+    </div>
+</nav>
 <!-- main app container -->
-<div class="app-container" [ngClass]="{ 'bg-light': user }">
-  <router-outlet></router-outlet>
+<div class="app-container " [ngClass]="{ 'bg-light': user } ">
+    <router-outlet></router-outlet>
 </div>

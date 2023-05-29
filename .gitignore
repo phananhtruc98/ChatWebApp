@@ -350,3 +350,4 @@ healthchecksdb
 SourceCode/gicbc/GICBC.Web/ClientApp/package-lock.json
 
 SourceCode/gicbc/.idea/
+ChatWebApp/ClientApp/src/environments/environment.ts

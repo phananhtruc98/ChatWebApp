@@ -54,12 +54,13 @@ export class LoginComponent {
             next: (data) => console.log(data),
             error: (error) => {
               console.log(error);
+              this.loading = false;
             },
           }
         )
       )
       .subscribe(() => {
-        this.loading = false;
+        this.router.navigate(['../home'], { relativeTo: this.route });
       });
   }
 }

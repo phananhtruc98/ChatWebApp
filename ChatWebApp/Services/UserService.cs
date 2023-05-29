@@ -4,24 +4,37 @@ using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Helpers;
 using ChatAppAPI.Models.Users;
+using Imagekit.Sdk;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
+using Imagekit;
+using Imagekit.Models;
+using Microsoft.AspNetCore.Routing.Constraints;
+using System.IO;
 
 namespace ChatAppAPI.Services
 {
     public interface IUserService
     {
         IEnumerable<User> GetAll();
+        IEnumerable<User> GetSuggestions(string userId);
         User GetById(Guid id);
-        void Register(CreateRequest model);
-        void Update(Guid id, UpdateRequest model);
+        void Register(UserForCreationDto model);
+        void Update(Guid id, UserForUpdateDto model);
         void Delete(Guid id);
-        ResponseLoginViewModel Login(string username, string password);
+        string Login(string username, string password);
+        Task<Result> SaveAvatar(IFormFile file);
     }
 
     public class UserService : IUserService
     {
-        private DataContext _context; 
+        private DataContext _context;
         private readonly IMapper _mapper;
         private readonly IJwtUtils _jwtUtils;
 
@@ -48,7 +61,7 @@ namespace ChatAppAPI.Services
             if (user == null) throw new KeyNotFoundException("User not found");
             return user;
         }
-        public void Update(Guid id, UpdateRequest model)
+        public void Update(Guid id, UserForUpdateDto model)
         {
             var user = getUser(id);
 
@@ -72,7 +85,7 @@ namespace ChatAppAPI.Services
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
-        public void Register(CreateRequest model)
+        public void Register(UserForCreationDto model)
         {
 
             if (_context.Users.Any(x => x.Email == model.Email))
@@ -86,17 +99,57 @@ namespace ChatAppAPI.Services
             _context.SaveChanges();
         }
 
-        public ResponseLoginViewModel Login(string username, string password)
+        public string Login(string username, string password)
         {
-            var result = new ResponseLoginViewModel();
+            var result = new UserDto();
             var user = _context.Users.SingleOrDefault(x => x.Email == username);
             if (user == null || !PasswordHelper.Verify(password, user.PasswordHash))
                 throw new AppException("Username or password is incorrect");
             result.Token = _jwtUtils.GenerateToken(user);
             result.Id = user.Id;
             result.Email = user.Email;
-            result.FullName = user.FullName;;
-            return result;
+            result.FullName = user.FullName;
+            ;
+            return JsonConvert.SerializeObject(result, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+        }
+
+        public IEnumerable<User> GetSuggestions(string userId)
+        {           
+            var user = _context.Users.Where(x => x.Id == Guid.Parse(userId)).Include(x => x.Contacts).FirstOrDefault();
+            var contacts = user.Contacts.Select(x => x.Id);
+            var suggestions = this.GetAll().Where(x => x.Id.ToString() 
+           != userId && !contacts.Contains(x.Id));
+            return suggestions;
+        }
+        public async Task<Result> SaveAvatar(IFormFile file)
+        {
+            var filesPath = Directory.GetCurrentDirectory() + "\\Uploadfiles";
+            if (!System.IO.Directory.Exists(filesPath))//create path 
+            {
+                Directory.CreateDirectory(filesPath);
+            }
+            var path = Path.Combine(filesPath, Path.GetFileName(file.FileName));
+            var fileStream = new FileStream(path, FileMode.Create);
+
+            await file.CopyToAsync(fileStream);
+            fileStream.Close();
+            var pathTest = filesPath + "\\"+ file.FileName;
+            byte[] readText = File.ReadAllBytes(pathTest);
+
+            var base64String = Convert.ToBase64String(readText);
+            var imageKit = new ImagekitClient("public_BCskujhJD0iuvZFK5kWy7NF9bRQ=", "private_Zy5hINsuTadcBM8wt4QOF2/ctFc=", "https://ik.imagekit.io/anhtrucphan/");
+           
+            // Upload by Base64
+            FileCreateRequest ob2 = new FileCreateRequest
+            {
+                file = base64String,
+                fileName = Guid.NewGuid().ToString()
+            };
+            Result resp = imageKit.Upload(ob2);
+            return resp;
         }
     }
 }

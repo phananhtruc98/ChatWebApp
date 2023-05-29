@@ -1,0 +1,9 @@
+<p>Find new friends.</p>
+
+
+<p>Suggestions</p>
+<div>
+    <h4 *ngFor="let user of users; index as i; first as isFirst">
+        {{user.fullName}} <button type="button" class="btn btn-primary" (click)="addContact(user.id)">Add contact</button>
+    </h4>
+</div>

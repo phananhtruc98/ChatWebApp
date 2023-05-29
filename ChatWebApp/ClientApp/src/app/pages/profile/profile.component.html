@@ -1,0 +1,22 @@
+<p>profile works!</p>
+<h1>Your profile</h1>
+<!-- <ik-image path="f4cecf50-c8b6-4faf-a90d-7be102c8be9b" [transformation]='[{
+  "height": "200",
+  "width": "200"
+}]'>
+</ik-image> -->
+
+<input type="file" class="file-upload" placeholder="Update profile picture" (change)="onFileSelected($event)">
+<button (click)="uploadAvatar()" type="button" class="btn btn-primary">Update profile picture</button>
+<form *ngIf="user" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+        <label for="fullName">FullName</label>
+        <input type="email" class="form-control" formControlName="fullName">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    <div class="form-group">
+        <label for="bio">Bio</label>
+        <input type="textarea" class="form-control" formControlName="bio">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

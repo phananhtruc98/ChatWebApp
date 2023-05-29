@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using System.Runtime.CompilerServices;
+using static Dapper.SqlMapper;
+using System.Security.Claims;
 
 namespace ChatAppAPI.Helpers
 {
-    public class AuthorizationMiddleWare: IAuthorizationMiddlewareResultHandler
+    public class AuthorizationMiddleWare : IAuthorizationMiddlewareResultHandler
     {
         private readonly AuthorizationMiddlewareResultHandler defaultHandler = new();
         private readonly IJwtUtils _jwtUtils;
@@ -28,8 +30,14 @@ namespace ChatAppAPI.Helpers
             }
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             var userId = token != null ? _jwtUtils.ValidateToken(token) : null;
+            
             if (userId != null)
-            {                
+            {
+                var identity = new ClaimsIdentity(new List<Claim>
+                {
+                    new Claim("UserId", userId.ToString(), ClaimValueTypes.String)
+                }, "Custom");
+                context.User = new ClaimsPrincipal(identity);
                 await next(context);
                 return;
             }

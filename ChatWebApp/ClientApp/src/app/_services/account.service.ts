@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { LoginUser, User } from '../_models/user';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
@@ -23,7 +23,16 @@ export class AccountService {
   }
 
   login(user: LoginUser) {
-    return this.http.post(`${environment.apiUrl}/users/login`, user);
+    return this.http.post(`${environment.apiUrl}/users/login`, user).pipe(
+      map((user: any) => {
+        console.log(user);
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+          this.userSubject.next(user);
+          return user;
+        }
+      })
+    );
   }
 
   logout() {
@@ -39,6 +48,9 @@ export class AccountService {
 
   getAll() {
     return this.http.get<User[]>(`${environment.apiUrl}/users`);
+  }
+  getSuggestions() {
+    return this.http.get<User[]>(`${environment.apiUrl}/users/suggestions`);
   }
 
   getById(id: string) {
@@ -72,5 +84,17 @@ export class AccountService {
         return x;
       })
     );
+  }
+  submitAvatar(file: any) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'multipart/form-data',
+      }),
+    };
+    return this.http.post(`${environment.apiUrl}/users/avatar`, file, {
+      headers: new HttpHeaders({
+        'Content-Type': 'undefined',
+      }),
+    });
   }
 }

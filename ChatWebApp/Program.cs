@@ -4,7 +4,11 @@ using ChatAppAPI.Helpers;
 using ChatAppAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,14 +44,16 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
-builder.Services.AddControllers().AddJsonOptions(x =>
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
     // serialize enums as strings in api responses (e.g. Role)
-    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 
     // ignore omitted parameters on models to enable optional params (e.g. User update)
-    x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
+//builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddSingleton<DataContext>();
@@ -55,6 +61,7 @@ builder.Services.AddSingleton<
     IAuthorizationMiddlewareResultHandler, AuthorizationMiddleWare>();
 builder.Services.AddSingleton<IJwtUtils, JwtUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserContactService, UserContactService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
