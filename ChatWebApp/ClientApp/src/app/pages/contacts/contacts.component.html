@@ -1,6 +1,33 @@
-<p>contacts works!</p>
-<div>
-    <h4 *ngFor="let user of userContacts; index as i; first as isFirst">
-        {{user.fullName}}
-    </h4>
-</div>
+<h1>All friends</h1>
+<p class="text" *ngIf="userContacts">{{userContacts.length}} friends</p>
+
+<mat-sidenav-container>
+    <mat-sidenav mode="side" opened fixedInViewport="true" fixedTopGap="120">
+        <div class="m-3 user-block" *ngFor="let user of userContacts; index as i; first as isFirst" (click)="selectContact(user)">
+
+            <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{user.avatar}}" [transformation]='[{
+"height": "60",
+"width": "60"
+}]'>
+            </ik-image>
+            <span class="text">{{user.fullName}}</span>
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <h1 *ngIf="!selectedContact">Select people's names to preview their profile.</h1>
+        <div *ngIf="selectedContact" class="m-3 relative">
+            <ik-image *ngIf="selectedContact.avatar" class="avatar-thumbnail" path="/{{selectedContact.avatar}}" [transformation]='[{
+          "height": "200",
+          "width": "200"
+        }]'>
+            </ik-image>
+            <h2>{{selectedContact.fullName}}</h2>
+            <p>{{selectedContact.bio}}</p>
+            <div class="position-absolute end-0">
+                <button mat-raised-button color="primary">Friend</button>
+                <button mat-raised-button class="ml-3">Message</button>
+            </div>
+        </div>
+
+    </mat-sidenav-content>
+</mat-sidenav-container>

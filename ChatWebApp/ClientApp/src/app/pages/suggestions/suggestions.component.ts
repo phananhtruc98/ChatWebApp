@@ -12,7 +12,8 @@ import { UserContactService } from 'src/app/_services/user-contact.service';
 export class SuggestionsComponent {
   user: User | null;
   users: UserProfile[] | null | undefined;
-  selectedSuggestion?: UserProfile;
+  selectedSuggestion: UserProfile | undefined;
+  isAddingContact: boolean = false;
   constructor(
     private accountService: AccountService,
     private userContactService: UserContactService
@@ -36,7 +37,7 @@ export class SuggestionsComponent {
   }
 
   addContact(contactId: any) {
-    console.log(contactId);
+    this.isAddingContact = true;
     var userId;
     this.accountService.user?.subscribe((user) => {
       userId = user?.id;
@@ -44,12 +45,11 @@ export class SuggestionsComponent {
     var userContactForCreation = { userId: userId, contactId: contactId };
     this.userContactService
       .createUserContact(userContactForCreation)
-      .pipe(
-        map((response) => {
-          console.log(response);
-        })
-      )
-      .subscribe();
+      .subscribe((response) => {
+        this.isAddingContact = false;
+        this.selectedSuggestion = undefined;
+        alert('Add contact successfully');
+      });
   }
   selectSuggestion(user: UserProfile) {
     console.log(user);

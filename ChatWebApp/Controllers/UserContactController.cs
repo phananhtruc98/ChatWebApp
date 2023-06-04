@@ -97,15 +97,11 @@ namespace ChatAppAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<UserContact>> PostUserContact(UserContactForCreationDto userContactRequest)
         {
-            var contact = _userService.GetById(userContactRequest.ContactId);
-            if (contact != null)
+            var userId = HttpContext.User.FindFirstValue("userId");
+            var rs = await _userContactService.AddUserContact(userId, userContactRequest.ContactId.ToString());
+            if(rs != null)
             {
-                var userContact = new UserContact();
-                userContact.UserId = Guid.Parse(HttpContext.User.FindFirstValue("userId"));
-                userContact.ContactId = contact.Id;
-                _context.UserContacts.Add(userContact);
-                await _context.SaveChangesAsync();
-                return Ok();
+                return Ok(rs);
             }
             return NoContent();
         }

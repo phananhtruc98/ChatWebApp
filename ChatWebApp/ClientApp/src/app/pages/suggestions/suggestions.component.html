@@ -10,11 +10,7 @@
   "width": "60"
 }]'>
             </ik-image>
-            <span class="user--name">{{user.fullName}}</span>
-            <div>
-                <button mat-raised-button color="primary" (click)="addContact(user.id)">Add contact</button>
-                <button mat-raised-button class="ml-3">Remove</button>
-            </div>
+            <span class="text">{{user.fullName}}</span>
         </div>
     </mat-sidenav>
     <mat-sidenav-content>
@@ -28,7 +24,10 @@
             <h2>{{selectedSuggestion.fullName}}</h2>
             <p>{{selectedSuggestion.bio}}</p>
             <div class="position-absolute end-0">
-                <button mat-raised-button color="primary" (click)="addContact(selectedSuggestion.id)">Add contact</button>
+                <button mat-raised-button color="primary" (click)="addContact(selectedSuggestion.id)" [disabled]="isAddingContact">
+                  <mat-icon *ngIf="isAddingContact"><mat-spinner color="warn" diameter="20">
+                  </mat-spinner></mat-icon>
+                  Add contact</button>
                 <button mat-raised-button class="ml-3">Remove</button>
             </div>
         </div>

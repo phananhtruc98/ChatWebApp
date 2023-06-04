@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { map } from 'rxjs';
-import { User } from 'src/app/_models/user';
+import { User, UserProfile } from 'src/app/_models/user';
 import { UserContactService } from 'src/app/_services/user-contact.service';
 
 @Component({
@@ -9,7 +9,8 @@ import { UserContactService } from 'src/app/_services/user-contact.service';
   styleUrls: ['./contacts.component.sass'],
 })
 export class ContactsComponent {
-  userContacts!: User[];
+  userContacts!: UserProfile[];
+  selectedContact!: UserProfile;
   constructor(private _userContactService: UserContactService) {
     this.getContacts();
   }
@@ -18,5 +19,10 @@ export class ContactsComponent {
     this._userContactService.getContacts().subscribe((rs) => {
       this.userContacts = rs;
     });
+  }
+  selectContact(user: any) {
+    console.log(user);
+    this.selectedContact = user;
+    console.log(user);
   }
 }

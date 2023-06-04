@@ -128,9 +128,10 @@ namespace ChatAppAPI.Services
         public IEnumerable<User> GetSuggestions(string userId)
         {           
             var user = _context.Users.Where(x => x.Id == Guid.Parse(userId)).Include(x => x.Contacts).FirstOrDefault();
-            var contacts = user.Contacts.Select(x => x.Id);
-            var suggestions = this.GetAll().Where(x => x.Id.ToString() 
-           != userId && !contacts.Contains(x.Id));
+            var contacts = user.Contacts.Select(x => x.ContactId);
+            var exceptList = new List<Guid>() { user.Id };
+            exceptList.AddRange(contacts);
+            var suggestions = this.GetAll().ExceptBy(exceptList, x=>x.Id);
             return suggestions;
         }
         public async Task<Result> SaveAvatar(IFormFile file)
