@@ -1,22 +1,55 @@
-<p>profile works!</p>
-<h1>Your profile</h1>
-<!-- <ik-image path="f4cecf50-c8b6-4faf-a90d-7be102c8be9b" [transformation]='[{
+<div class="card" *ngIf="user">
+    <div class="card-header">Update Profile</div>
+    <div class="card-body">
+        <!-- <ik-image path="/{{user.avatar}}" [transformation]='[{
   "height": "200",
   "width": "200"
 }]'>
-</ik-image> -->
+        </ik-image> -->
+        <div class="mb-3" *ngIf="!this.isChangeProfilePictureShown">
+            <label for="formFile" class="form-label">Upload file example</label>
+            <input (change)="this.onFilechange($event)" class="form-control" type="file" id="formFile">
+            <button mat-raised-button color="primary" (click)="this.upload()" type="button" class="mt-3" [disabled]="isUploadingProfilePicture">
+              <mat-icon *ngIf="isUploadingProfilePicture"><mat-spinner color="warn" diameter="20">
+              </mat-spinner></mat-icon>Upload profile picture</button>
+            <button mat-raised-button (click)="this.changeProfilePicture()" type="button" class="mt-3">Cancel</button>
+        </div>
+        <button mat-raised-button color="primary" class="btn btn-link" *ngIf="this.isChangeProfilePictureShown" (click)="this.changeProfilePicture()">Change profile picture</button>
 
-<input type="file" class="file-upload" placeholder="Update profile picture" (change)="onFileSelected($event)">
-<button (click)="uploadAvatar()" type="button" class="btn btn-primary">Update profile picture</button>
-<form *ngIf="user" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-        <label for="fullName">FullName</label>
-        <input type="email" class="form-control" formControlName="fullName">
-        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        <form *ngIf="user" [formGroup]="form" (ngSubmit)="onSubmit()">
+            <div class="mt-3 mb-3">
+                <mat-form-field class="example-full-width">
+                    <mat-label>FullName</mat-label>
+                    <input matInput type="email" formControlName="fullName">
+                </mat-form-field>
+            </div>
+
+            <div class="mt-3 mb-3">
+                <mat-form-field>
+                    <mat-label>Bio</mat-label>
+                    <textarea matInput formControlName="bio"></textarea>
+                </mat-form-field>
+            </div>
+
+            <div class="form-group">
+                <label for="isFemale">Gender</label>
+                <div>
+                    <mat-checkbox type="checkbox" color="primary" formControlName="isFemale" value="isFemale"> Female</mat-checkbox>
+                </div>
+            </div>
+            <mat-form-field>
+                <mat-label>Date Of Birth</mat-label>
+                <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="picker1" formControlName="dateOfBirth">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+            <div class="mt-3">
+                <button mat-raised-button color="primary" type="submit" [disabled]="isUpdatingProfile">
+                  <mat-icon *ngIf="isUpdatingProfile"><mat-spinner color="warn" diameter="20">
+                  </mat-spinner></mat-icon>
+                  Submit</button>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="bio">Bio</label>
-        <input type="textarea" class="form-control" formControlName="bio">
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</div>

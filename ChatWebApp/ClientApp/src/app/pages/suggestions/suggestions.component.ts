@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { map } from 'rxjs';
-import { User } from 'src/app/_models/user';
+import { User, UserProfile } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
 import { UserContactService } from 'src/app/_services/user-contact.service';
 
@@ -11,8 +11,8 @@ import { UserContactService } from 'src/app/_services/user-contact.service';
 })
 export class SuggestionsComponent {
   user: User | null;
-  users: User[] | null | undefined;
-
+  users: UserProfile[] | null | undefined;
+  selectedSuggestion?: UserProfile;
   constructor(
     private accountService: AccountService,
     private userContactService: UserContactService
@@ -50,5 +50,9 @@ export class SuggestionsComponent {
         })
       )
       .subscribe();
+  }
+  selectSuggestion(user: UserProfile) {
+    console.log(user);
+    this.selectedSuggestion = user;
   }
 }

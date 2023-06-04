@@ -12,7 +12,7 @@ using System;
 using System.IO;
 namespace ChatAppAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UsersController : ControllerBase
@@ -79,8 +79,15 @@ namespace ChatAppAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> PostFile(IFormFile file)
         {
-            var rs = await _userService.SaveAvatar(file);
-            return Ok(rs);
+            var userId = HttpContext.User.FindFirstValue("userId");
+
+            if (userId != null)
+            {
+                var uploadedAvatar = await _userService.SaveAvatar(file);
+                var user = await _userService.UpdateAvatar(Guid.Parse(userId), uploadedAvatar.name);
+                return Ok(user);
+            }
+            return NoContent();
         }
     }
 }

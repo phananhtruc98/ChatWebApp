@@ -85,16 +85,9 @@ export class AccountService {
       })
     );
   }
-  submitAvatar(file: any) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'multipart/form-data',
-      }),
-    };
-    return this.http.post(`${environment.apiUrl}/users/avatar`, file, {
-      headers: new HttpHeaders({
-        'Content-Type': 'undefined',
-      }),
-    });
+  public uploadfile(file: File) {
+    let formParams = new FormData();
+    formParams.append('file', file);
+    return this.http.post(`${environment.apiUrl}/users/avatar`, formParams);
   }
 }

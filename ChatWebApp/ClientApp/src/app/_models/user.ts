@@ -10,8 +10,11 @@ export class LoginUser {
   password!: string;
 }
 export class UserProfile {
+  id?: string;
   fullName?: string;
   bio?: string;
   avatar?: string;
   email?: string;
+  isFemale?: boolean;
+  dateOfBirth?: Date;
 }

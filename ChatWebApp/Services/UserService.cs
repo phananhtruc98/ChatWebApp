@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using ChatAppAPI.Authorization;
 using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
@@ -30,6 +30,7 @@ namespace ChatAppAPI.Services
         void Delete(Guid id);
         string Login(string username, string password);
         Task<Result> SaveAvatar(IFormFile file);
+        Task<User> UpdateAvatar(Guid id, string avatar);
     }
 
     public class UserService : IUserService
@@ -78,6 +79,14 @@ namespace ChatAppAPI.Services
             _context.Users.Update(user);
             _context.SaveChanges();
         }
+        public async Task<User> UpdateAvatar(Guid id, string avatar)
+        {
+            var user = getUser(id);
+            user.Avatar = avatar;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
 
         public void Delete(Guid id)
         {
@@ -90,9 +99,9 @@ namespace ChatAppAPI.Services
 
             if (_context.Users.Any(x => x.Email == model.Email))
                 throw new AppException("Username '" + model.Email + "' is already taken");
-
+            
             var user = _mapper.Map<User>(model);
-
+            user.Avatar = "default-avatar.png";
             user.PasswordHash = PasswordHelper.Hash(model.Password);
             user.RoleId = 1;
             _context.Users.Add(user);
