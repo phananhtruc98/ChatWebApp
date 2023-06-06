@@ -1,0 +1,21 @@
+<h1>Chats</h1>
+<mat-sidenav-container>
+    <mat-sidenav mode="side" opened fixedInViewport="true" fixedTopGap="120">
+        <div class="m-3 user-block" *ngFor="let user of userContacts; index as i; first as isFirst" (click)="selectContact(user)">
+
+            <!-- <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{user.avatar}}" [transformation]='[{
+"height": "60",
+"width": "60"
+}]'>
+          </ik-image> -->
+            <span class="text">{{user.fullName}}</span>
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <h1 *ngIf="!selectedContact">Select a chat or start a new conversation.</h1>
+        <div *ngIf="selectedContact" class="m-3 relative">
+            <button mat-raised-button color="accent" class="ml-3" (click)="createChat()">Message</button>
+        </div>
+
+    </mat-sidenav-content>
+</mat-sidenav-container>

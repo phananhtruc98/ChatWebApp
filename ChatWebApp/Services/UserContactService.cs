@@ -17,14 +17,12 @@ namespace ChatAppAPI.Services
     {
         private DataContext _context;
         private readonly IMapper _mapper;
-        private readonly IJwtUtils _jwtUtils;
         private readonly IUserService _userService;
 
-        public UserContactService(DataContext context, IMapper mapper, IJwtUtils jwtUtils, IUserService userService)
+        public UserContactService(DataContext context, IMapper mapper, IUserService userService)
         {
             _context = context;
             _mapper = mapper;
-            _jwtUtils = jwtUtils;
             _userService = userService;
         }
 

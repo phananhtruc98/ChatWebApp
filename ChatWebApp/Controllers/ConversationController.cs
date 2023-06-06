@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatAppAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ConversationController : ControllerBase
@@ -21,7 +23,7 @@ namespace ChatAppAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Conversation
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Conversation>>> GetConversations()
         {
@@ -32,7 +34,7 @@ namespace ChatAppAPI.Controllers
             return await _context.Conversations.ToListAsync();
         }
 
-        // GET: api/Conversation/5
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<Conversation>> GetConversation(Guid id)
         {
@@ -50,8 +52,7 @@ namespace ChatAppAPI.Controllers
             return conversation;
         }
 
-        // PUT: api/Conversation/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutConversation(Guid id, Conversation conversation)
         {
@@ -81,8 +82,6 @@ namespace ChatAppAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Conversation
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Conversation>> PostConversation(Conversation conversation)
         {

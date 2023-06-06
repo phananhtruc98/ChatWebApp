@@ -24,6 +24,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MessagesComponent } from './pages/messages/messages.component';
 @NgModule({
   imports: [
     BrowserModule,
@@ -55,6 +56,7 @@ import { MatIconModule } from '@angular/material/icon';
     ProfileComponent,
     ContactsComponent,
     SuggestionsComponent,
+    MessagesComponent,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

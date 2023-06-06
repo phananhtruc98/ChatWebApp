@@ -5,6 +5,7 @@
         <a class="nav-item nav-link" routerLink="/profile" routerLinkActive="active">Profile</a>
         <a class="nav-item nav-link" routerLink="/contacts" routerLinkActive="active">Contacts</a>
         <a class="nav-item nav-link" routerLink="/suggestions" routerLinkActive=" active">Suggestions</a>
+        <a class="nav-item nav-link" routerLink="/messages" routerLinkActive=" active">Messages</a>
         <button class="btn btn-link nav-item nav-link " (click)="logout()">Logout</button>
         <button class="btn btn-link nav-item nav-link " *ngIf="user">{{user.fullName}}</button>
     </div>

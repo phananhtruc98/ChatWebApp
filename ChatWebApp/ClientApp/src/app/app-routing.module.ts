@@ -6,6 +6,7 @@ import { LoginComponent } from './account/login/login.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ContactsComponent } from './pages/contacts/contacts.component';
 import { SuggestionsComponent } from './pages/suggestions/suggestions.component';
+import { MessagesComponent } from './pages/messages/messages.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'profile', component: ProfileComponent },
   { path: 'contacts', component: ContactsComponent },
   { path: 'suggestions', component: SuggestionsComponent },
+  { path: 'messages', component: MessagesComponent },
   // { path: 'users', loadChildren: usersModule, canActivate: [AuthGuard] },
   // { path: 'account', loadChildren: accountModule },
 
