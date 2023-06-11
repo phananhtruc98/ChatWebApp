@@ -1,6 +1,7 @@
 using ChatAppAPI.Authorization;
 using ChatAppAPI.Data;
 using ChatAppAPI.Helpers;
+using ChatAppAPI.Hubs;
 using ChatAppAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -56,6 +57,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 //builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver());
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials()
+           .WithOrigins("http://localhost:4200");
+}));
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<DataContext>();
 builder.Services.AddSingleton<
     IAuthorizationMiddlewareResultHandler, AuthorizationMiddleWare>();
@@ -69,10 +79,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
@@ -88,5 +95,5 @@ app.UseMiddleware<ErrorHandlerMiddleware>();
 //    spa.UseProxyToSpaDevelopmentServer("https://localhost:4200");
 //});
 app.MapControllers();
-
+app.MapHub<AccountHub>("/accountHub");
 app.Run();

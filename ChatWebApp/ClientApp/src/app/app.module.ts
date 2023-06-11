@@ -25,6 +25,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MessagesComponent } from './pages/messages/messages.component';
+import { SignalRService } from './_services/signalr.service';
 @NgModule({
   imports: [
     BrowserModule,
@@ -60,6 +61,7 @@ import { MessagesComponent } from './pages/messages/messages.component';
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: SignalRService },
   ],
   bootstrap: [AppComponent],
   exports: [CommonModule, FormsModule, ReactiveFormsModule],

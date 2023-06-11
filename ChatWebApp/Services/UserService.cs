@@ -3,20 +3,14 @@ using ChatAppAPI.Authorization;
 using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Helpers;
+using ChatAppAPI.Hubs;
 using ChatAppAPI.Models.Users;
 using Imagekit.Sdk;
-using Microsoft.AspNetCore.Connections;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.AspNet.SignalR.Infrastructure;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.Json;
-using Imagekit;
-using Imagekit.Models;
-using Microsoft.AspNetCore.Routing.Constraints;
-using System.IO;
 
 namespace ChatAppAPI.Services
 {
@@ -38,12 +32,13 @@ namespace ChatAppAPI.Services
         private DataContext _context;
         private readonly IMapper _mapper;
         private readonly IJwtUtils _jwtUtils;
-
-        public UserService(DataContext context, IMapper mapper, IJwtUtils jwtUtils)
+        private IHubContext<AccountHub> _accountHub;
+        public UserService(DataContext context, IMapper mapper, IJwtUtils jwtUtils, IHubContext<AccountHub> accountHub)
         {
             _context = context;
             _mapper = mapper;
             _jwtUtils = jwtUtils;
+            _accountHub = accountHub;
         }
 
         public IEnumerable<User> GetAll()
@@ -73,10 +68,12 @@ namespace ChatAppAPI.Services
             // hash password if it was entered
             if (!string.IsNullOrEmpty(model.Password))
                 user.PasswordHash = PasswordHelper.Hash(model.Password);
+            
 
             // copy model to user and save
             _mapper.Map(model, user);
             _context.Users.Update(user);
+            _accountHub.Clients.All.SendAsync("UpdateProfile", user);
             _context.SaveChanges();
         }
         public async Task<User> UpdateAvatar(Guid id, string avatar)
