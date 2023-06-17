@@ -26,6 +26,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MessagesComponent } from './pages/messages/messages.component';
 import { SignalRService } from './_services/signalr.service';
+import { AuthGuardService } from './_services/auth-guard.service';
 @NgModule({
   imports: [
     BrowserModule,
@@ -62,6 +63,7 @@ import { SignalRService } from './_services/signalr.service';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: SignalRService },
+    { provide: AuthGuardService },
   ],
   bootstrap: [AppComponent],
   exports: [CommonModule, FormsModule, ReactiveFormsModule],

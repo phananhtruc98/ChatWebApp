@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 export class AccountService {
   private userSubject: BehaviorSubject<User | null>;
   public user: Observable<User | null>;
-
+  private isloggedIn: boolean = false;
   constructor(private router: Router, private http: HttpClient) {
     this.userSubject = new BehaviorSubject(
       JSON.parse(localStorage.getItem('user')!)
@@ -29,14 +29,18 @@ export class AccountService {
         if (user) {
           localStorage.setItem('user', JSON.stringify(user));
           this.userSubject.next(user);
+          this.isloggedIn = true;
           return user;
         }
       })
     );
   }
+  isUserLoggedIn(): boolean {
+    return this.isloggedIn;
+  }
 
   logout() {
-    // remove user from local storage and set current user to null
+    this.isloggedIn = false;
     localStorage.removeItem('user');
     this.userSubject.next(null);
     this.router.navigate(['/account/login']);
