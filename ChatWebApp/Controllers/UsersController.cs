@@ -90,13 +90,6 @@ namespace ChatAppAPI.Controllers
             return NoContent();
         }
 
-        [Route("conversations")]
-        [HttpGet]
-        public async Task<ActionResult> GetConversations()
-        {
-            var userId = HttpContext.User.FindFirstValue("userId");
-            var rs = await _userService.GetConversations(Guid.Parse(userId));
-            return Ok(rs);
-        }
+        
     }
 }

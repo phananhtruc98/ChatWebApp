@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using ChatAppAPI.Data;
 using ChatAppAPI.Entities;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using ChatAppAPI.Services;
 
 namespace ChatAppAPI.Controllers
 {
@@ -16,108 +18,37 @@ namespace ChatAppAPI.Controllers
     [ApiController]
     public class ConversationController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly IConversationService _conversationService;
+        private readonly IMessageService _messageService;
 
-        public ConversationController(DataContext context)
+        public ConversationController(IConversationService conversationService, IMessageService messageService)
         {
-            _context = context;
+            _conversationService = conversationService;
+            _messageService = messageService;
         }
 
-        
+
+        [Route("conversations")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Conversation>>> GetConversations()
+        public async Task<ActionResult> GetConversations()
         {
-          if (_context.Conversations == null)
-          {
-              return NotFound();
-          }
-            return await _context.Conversations.ToListAsync();
+            var userId = HttpContext.User.FindFirstValue("userId");
+            var rs = await _conversationService.GetConversations(Guid.Parse(userId));
+            return Ok(rs);
         }
 
-        
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Conversation>> GetConversation(Guid id)
+
+        [HttpGet("{conversationId}")]
+        public async Task<ActionResult<Conversation>> GetConversation(Guid conversationId)
         {
-          if (_context.Conversations == null)
-          {
-              return NotFound();
-          }
-            var conversation = await _context.Conversations.FindAsync(id);
-
-            if (conversation == null)
-            {
-                return NotFound();
-            }
-
-            return conversation;
+            var rs = await _conversationService.GetConversation(conversationId);
+            return Ok(rs);
         }
-
-        
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutConversation(Guid id, Conversation conversation)
+        [HttpGet("{conversationId}/messages")]
+        public async Task<ActionResult<Conversation>> GetMessagesInConversation(Guid conversationId)
         {
-            if (id != conversation.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(conversation).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ConversationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Conversation>> PostConversation(Conversation conversation)
-        {
-          if (_context.Conversations == null)
-          {
-              return Problem("Entity set 'DataContext.Conversations'  is null.");
-          }
-            _context.Conversations.Add(conversation);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetConversation", new { id = conversation.Id }, conversation);
-        }
-
-        // DELETE: api/Conversation/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteConversation(Guid id)
-        {
-            if (_context.Conversations == null)
-            {
-                return NotFound();
-            }
-            var conversation = await _context.Conversations.FindAsync(id);
-            if (conversation == null)
-            {
-                return NotFound();
-            }
-
-            _context.Conversations.Remove(conversation);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ConversationExists(Guid id)
-        {
-            return (_context.Conversations?.Any(e => e.Id == id)).GetValueOrDefault();
+            var rs = await _messageService.GetMessageByConversationId(conversationId);
+            return Ok(rs);
         }
     }
 }
