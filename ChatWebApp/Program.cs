@@ -72,6 +72,9 @@ builder.Services.AddSingleton<
 builder.Services.AddSingleton<IJwtUtils, JwtUtils>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserContactService, UserContactService>();
+builder.Services.AddScoped<IConversationService, ConversationService>();
+builder.Services.AddScoped<IConversationParticipantService, ConversationParticipantService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

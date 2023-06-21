@@ -1,6 +1,7 @@
 using AutoMapper;
 using ChatAppAPI.Authorization;
 using ChatAppAPI.Data;
+using ChatAppAPI.Dtos.Conversation;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Helpers;
 using ChatAppAPI.Hubs;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Linq.Expressions;
 
 namespace ChatAppAPI.Services
 {
@@ -25,6 +27,7 @@ namespace ChatAppAPI.Services
         string Login(string username, string password);
         Task<Result> SaveAvatar(IFormFile file);
         Task<User> UpdateAvatar(Guid id, string avatar);
+        Task<IEnumerable<ConversationDto>> GetConversations(Guid userId);
     }
 
     public class UserService : IUserService
@@ -157,6 +160,29 @@ namespace ChatAppAPI.Services
             };
             Result resp = imageKit.Upload(ob2);
             return resp;
+        }
+
+        public async Task<IEnumerable<ConversationDto>> GetConversations(Guid userId)
+        {
+            if (_context.Conversations == null)
+            {
+                throw new ArgumentNullException("Conversations is null");
+            }
+
+            var user = _context.Users.Include(x=>x.ConversationParticipants).SingleOrDefault(x => x.Id == userId);
+            var conversationIds = user.ConversationParticipants?.Select(c => c.ConversationId).ToList();
+            var conversations = _context.Conversations.Where(x => conversationIds.Contains(x.Id));
+            var conversationDtos = new List<ConversationDto>();
+            foreach( var conversation in conversations)
+            {
+                var conversationDto = _mapper.Map<ConversationDto>(conversation);
+                var lastMessage = _context.Messages.OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+                conversationDto.LastMessage = lastMessage.Content;
+                conversationDto.LastSender = lastMessage.CreatedBy.FullName;
+                conversationDtos.Add(conversationDto);
+            }           
+
+            return conversationDtos;
         }
     }
 }

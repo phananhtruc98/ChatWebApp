@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatAppAPI.Dtos.Conversation;
 using ChatAppAPI.Dtos.UserContact;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Models.Users;
@@ -27,6 +28,7 @@ namespace ChatAppAPI.Helpers
 
 
             CreateMap<User, UserContactDto>();
+            CreateMap<Conversation, ConversationDto>();
             //CreateMap<UserContactDto, UserContact>().ForMember(d => d.Contact, opt => opt.MapFrom(s => s));
         }
     }
