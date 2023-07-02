@@ -26,7 +26,7 @@ namespace ChatAppAPI.Helpers
                         return true;
                     }
                 ));
-
+            CreateMap<MessageForCreation, Message>();
 
             CreateMap<User, UserContactDto>();
             CreateMap<Conversation, ConversationDto>();

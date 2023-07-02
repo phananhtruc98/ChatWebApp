@@ -10,7 +10,7 @@ namespace ChatAppAPI.Services
 {
     public interface IMessageService
     {
-        Task<Message> CreateMessage(Guid userId, Message message);
+        Task<Message> CreateMessage(Guid userId, MessageForCreation messageForCreation);
         Task<IEnumerable<MessageDto>> GetMessageByConversationId(Guid conversationId);
     }
     public class MessageService : IMessageService
@@ -25,8 +25,9 @@ namespace ChatAppAPI.Services
             _mapper = mapper;
             _accountHub = accountHub;
         }
-        public async Task<Message> CreateMessage(Guid userId, Message message)
+        public async Task<Message> CreateMessage(Guid userId, MessageForCreation messageForCreation)
         {
+            var message = _mapper.Map<Message>(messageForCreation);
             if (_context.Messages == null)
             {
                 throw new ArgumentNullException("Messages is null");

@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { UserProfile } from 'src/app/_models/user';
+import { async } from 'rxjs';
+import { Conversation, ConversationDto } from 'src/app/_models/conversation';
+import { FirstMessageForCreation, Message } from 'src/app/_models/message';
+import { User, UserProfile } from 'src/app/_models/user';
+import { ConversationService } from 'src/app/_services/conversation.service';
 import { UserContactService } from 'src/app/_services/user-contact.service';
 
 @Component({
@@ -9,20 +13,57 @@ import { UserContactService } from 'src/app/_services/user-contact.service';
 })
 export class MessagesComponent {
   userContacts!: UserProfile[];
-  selectedContact!: UserProfile;
-  constructor(private _userContactService: UserContactService) {
-    this.getContacts();
+  selectedConversation!: Conversation;
+  currentUser!: User;
+  conversations!: ConversationDto[];
+  currentMessages!: Message[];
+  currentText!: string;
+  currentParticipantId?: string;
+  constructor(private _userContactService: UserContactService, private _conversationService: ConversationService) {
+    this.currentUser = JSON.parse(localStorage.getItem('user')!);
   }
 
+  ngOnInit(){
+    this.getConversations();
+  }
   getContacts() {
     this._userContactService.getContacts().subscribe((rs) => {
       this.userContacts = rs;
     });
   }
-  selectContact(user: any) {
-    console.log(user);
-    this.selectedContact = user;
-    console.log(user);
+  getConversations(){
+    this._conversationService.getConversations().subscribe((rs) => {
+      this.conversations = rs;
+      console.log(this.conversations);
+    })
   }
-  createChat() {}
+  selectConversation(conversation: any): void  {
+    this.selectedConversation = conversation;
+    if(this.selectedConversation.id){
+      this._conversationService.getConversation(this.selectedConversation.id).subscribe((rs)=>{
+        console.log(rs);
+        this.getMessages(conversation.id);
+        this.currentParticipantId = rs.participants?.find(x=>x.userId==this.currentUser.id)?.id;
+        console.log(this.currentParticipantId)
+      })
+    }
+  }
+  getMessages(conversationId: string){
+    this._conversationService.getMessages(conversationId).subscribe((rs) => {
+      this.currentMessages = rs;
+      console.log(this.currentMessages);
+    })
+  }
+  sendMessage(){
+    console.log(this.currentText);
+    let newMessage: Message = {};
+    if(this.currentText){
+      newMessage.content = this.currentText;
+      newMessage.conversationParticipantId = this.currentParticipantId;
+    }
+    this._conversationService.sendMessage(newMessage).subscribe((rs) => {
+      console.log("Send successfully");
+      this.currentText = ''
+    })
+  }
 }

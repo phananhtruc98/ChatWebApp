@@ -12,7 +12,7 @@ namespace ChatAppAPI.Services
     {
         Task<Conversation> CreateConversation(Conversation conversationForCreationDto);
         Task<IEnumerable<ConversationDto>> GetConversations(Guid userId);
-        Task<Conversation> GetConversation(Guid id);
+        Task<ConversationInfoDto> GetConversation(Guid id);
     }
     public class ConversationService : IConversationService
     {
@@ -39,9 +39,16 @@ namespace ChatAppAPI.Services
         {
             return (_context.Conversations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        public async Task<Conversation> GetConversation(Guid id)
+        public async Task<ConversationInfoDto> GetConversation(Guid id)
         {
-            return _context.Conversations?.FirstOrDefault(e => e.Id == id);
+            var conversation = _context.Conversations?.FirstOrDefault(e => e.Id == id);
+            if (conversation == null) throw new ArgumentNullException("Conversation is null");
+            var participants = _context.ConversationParticipants.Where(x => x.ConversationId == conversation.Id);
+            ConversationInfoDto conversationInfoDto = new ConversationInfoDto();
+            conversationInfoDto.Id = conversation.Id;
+            conversationInfoDto.Name = conversation.Name;
+            conversationInfoDto.Participants = participants.ToList();
+            return conversationInfoDto;
         }
         public async Task<IEnumerable<ConversationDto>> GetConversations(Guid userId)
         {
@@ -57,7 +64,7 @@ namespace ChatAppAPI.Services
             foreach (var conversation in conversations)
             {
                 var conversationDto = _mapper.Map<ConversationDto>(conversation);
-                var lastMessage = _context.Messages.OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+                var lastMessage = _context.Messages.Where(x=>x.ConversationParticipant.ConversationId == conversationDto.Id).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
                 conversationDto.LastMessage = lastMessage.Content;
                 conversationDto.LastSender = lastMessage.CreatedBy.FullName;
                 conversationDtos.Add(conversationDto);

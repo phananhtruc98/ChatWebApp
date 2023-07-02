@@ -1,21 +1,31 @@
 <h1>Chats</h1>
 <mat-sidenav-container>
     <mat-sidenav mode="side" opened fixedInViewport="true" fixedTopGap="120">
-        <div class="m-3 user-block" *ngFor="let user of userContacts; index as i; first as isFirst" (click)="selectContact(user)">
-
-            <!-- <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{user.avatar}}" [transformation]='[{
+        <div class="m-3 user-block" *ngFor="let conversation of conversations; index as i; first as isFirst" (click)="selectConversation(conversation)">
+            <!-- <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{conversation.avatar}}" [transformation]='[{
 "height": "60",
 "width": "60"
 }]'>
-          </ik-image> -->
-            <span class="text">{{user.fullName}}</span>
+        </ik-image> -->
+            <span class="text">{{conversation.name}}</span>
+            <div>{{conversation.lastSender}}: {{conversation.lastMessage}}</div>
         </div>
     </mat-sidenav>
     <mat-sidenav-content>
-        <h1 *ngIf="!selectedContact">Select a chat or start a new conversation.</h1>
-        <div *ngIf="selectedContact" class="m-3 relative">
-            <button mat-raised-button color="accent" class="ml-3" (click)="createChat()">Message</button>
-        </div>
+        <h1>Select a chat or start a new conversation.</h1>
+        <div *ngIf="selectedConversation" class="m-3 relative">
+            <div *ngFor="let message of currentMessages; index as i; first as isFirst">
+                <span>{{message.createdBy?.fullName}}: {{message.content}}</span>
 
+            </div>
+            <form class="example-form">
+                <mat-form-field class="example-full-width">
+                    <input matInput [(ngModel)]="currentText" name="currentText">
+                </mat-form-field>
+                <button mat-fab color="accent" (click)="sendMessage()">
+                  <mat-icon>send</mat-icon>
+                </button>
+            </form>
+        </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

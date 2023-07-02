@@ -27,6 +27,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MessagesComponent } from './pages/messages/messages.component';
 import { SignalRService } from './_services/signalr.service';
 import { AuthGuardService } from './_services/auth-guard.service';
+import { ConversationService } from './_services/conversation.service';
 @NgModule({
   imports: [
     BrowserModule,
@@ -64,6 +65,7 @@ import { AuthGuardService } from './_services/auth-guard.service';
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: SignalRService },
     { provide: AuthGuardService },
+    { provide: ConversationService },
   ],
   bootstrap: [AppComponent],
   exports: [CommonModule, FormsModule, ReactiveFormsModule],
