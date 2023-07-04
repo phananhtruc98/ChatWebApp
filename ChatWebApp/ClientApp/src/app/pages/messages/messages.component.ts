@@ -66,4 +66,7 @@ export class MessagesComponent {
       this.currentText = ''
     })
   }
+  isSentByCurrentUser(userId: any){
+    return userId === this.currentUser.id;
+  }
 }
