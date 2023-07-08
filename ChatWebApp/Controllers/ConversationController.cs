@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using ChatAppAPI.Services;
 using ChatAppAPI.Dtos.Message;
+using ChatAppAPI.Dtos.Conversation;
 
 namespace ChatAppAPI.Controllers
 {
@@ -40,11 +41,12 @@ namespace ChatAppAPI.Controllers
 
 
         [HttpGet("{conversationId}")]
-        public async Task<ActionResult<Conversation>> GetConversation(Guid conversationId)
+        public async Task<ActionResult<ConversationInfoDto>> GetConversation(Guid conversationId)
         {
             var rs = await _conversationService.GetConversation(conversationId);
             return Ok(rs);
         }
+
         [HttpGet("{conversationId}/messages")]
         public async Task<ActionResult<Conversation>> GetMessagesInConversation(Guid conversationId)
         {

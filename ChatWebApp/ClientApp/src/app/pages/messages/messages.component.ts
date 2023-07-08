@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { async } from 'rxjs';
-import { Conversation, ConversationDto } from 'src/app/_models/conversation';
+import { Conversation, ConversationDto, ConversationInfoDto } from 'src/app/_models/conversation';
 import { FirstMessageForCreation, Message } from 'src/app/_models/message';
 import { User, UserProfile } from 'src/app/_models/user';
 import { ConversationService } from 'src/app/_services/conversation.service';
 import { UserContactService } from 'src/app/_services/user-contact.service';
-
+import { ConversationDetailDialogComponent } from 'src/app/components/conversation-detail-dialog/conversation-detail-dialog.component';
+import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.component.html',
@@ -19,7 +20,8 @@ export class MessagesComponent {
   currentMessages!: Message[];
   currentText!: string;
   currentParticipantId?: string;
-  constructor(private _userContactService: UserContactService, private _conversationService: ConversationService) {
+  currentConversationDetail?: ConversationInfoDto;
+  constructor(private _userContactService: UserContactService, private _conversationService: ConversationService, public dialog: MatDialog) {
     this.currentUser = JSON.parse(localStorage.getItem('user')!);
   }
 
@@ -42,6 +44,7 @@ export class MessagesComponent {
     if(this.selectedConversation.id){
       this._conversationService.getConversation(this.selectedConversation.id).subscribe((rs)=>{
         console.log(rs);
+        this.currentConversationDetail = rs;
         this.getMessages(conversation.id);
         this.currentParticipantId = rs.participants?.find(x=>x.userId==this.currentUser.id)?.id;
         console.log(this.currentParticipantId)
@@ -68,5 +71,11 @@ export class MessagesComponent {
   }
   isSentByCurrentUser(userId: any){
     return userId === this.currentUser.id;
+  }
+
+  conversationDetails(){
+    let dialogRef = this.dialog.open(ConversationDetailDialogComponent, {
+      data: this.currentConversationDetail,
+    });
   }
 }

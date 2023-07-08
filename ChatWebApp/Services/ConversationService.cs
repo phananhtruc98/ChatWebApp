@@ -43,7 +43,7 @@ namespace ChatAppAPI.Services
         {
             var conversation = _context.Conversations?.FirstOrDefault(e => e.Id == id);
             if (conversation == null) throw new ArgumentNullException("Conversation is null");
-            var participants = _context.ConversationParticipants.Where(x => x.ConversationId == conversation.Id);
+            var participants = _context.ConversationParticipants.Include(x=>x.User).Where(x => x.ConversationId == conversation.Id);
             ConversationInfoDto conversationInfoDto = new ConversationInfoDto();
             conversationInfoDto.Id = conversation.Id;
             conversationInfoDto.Name = conversation.Name;
