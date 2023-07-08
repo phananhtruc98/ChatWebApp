@@ -4,7 +4,7 @@ export class Conversation {
   id?: string;
   name?: string;
   avatar?: string;
-  createdDate?: Date;
+  createdDate!: Date;
   modifiedDate?: Date;
   createdBy?: string;
   modifiedBy?: string;
@@ -15,6 +15,7 @@ export class ConversationDto {
   avatar?: string;
   lastMessage?: string;
   lastSender?: string;
+  lastSent!: Date;
 }
 export class ConversationInfoDto{
   id?: string;

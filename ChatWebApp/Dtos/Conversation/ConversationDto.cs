@@ -9,6 +9,7 @@ namespace ChatAppAPI.Dtos.Conversation
         public string? Avatar { get; set; }
         public string? LastMessage { get; set; }
         public string? LastSender { get; set; }
+        public DateTime?  LastSent { get; set; }
     }
 
     public class ConversationInfoDto

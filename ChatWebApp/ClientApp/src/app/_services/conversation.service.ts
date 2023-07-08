@@ -3,7 +3,7 @@ import { FirstMessageForCreation, Message } from '../_models/message';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Injectable } from '@angular/core';
-import { Conversation, ConversationInfoDto } from '../_models/conversation';
+import { Conversation, ConversationDto, ConversationInfoDto } from '../_models/conversation';
 @Injectable()
 export class ConversationService {
   constructor(private http: HttpClient) {}
@@ -13,7 +13,7 @@ export class ConversationService {
   }
 
   public getConversations(){
-    return this.http.get<Conversation[]>(`${environment.apiUrl}/Conversation/conversations`);
+    return this.http.get<ConversationDto[]>(`${environment.apiUrl}/Conversation/conversations`);
   }
 
   public getMessages(conversationId: string){

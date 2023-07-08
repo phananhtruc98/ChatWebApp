@@ -67,6 +67,7 @@ namespace ChatAppAPI.Services
                 var lastMessage = _context.Messages.Where(x=>x.ConversationParticipant.ConversationId == conversationDto.Id).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
                 conversationDto.LastMessage = lastMessage.Content;
                 conversationDto.LastSender = lastMessage.CreatedBy.FullName;
+                conversationDto.LastSent = lastMessage.CreatedDate;
                 conversationDtos.Add(conversationDto);
             }
 

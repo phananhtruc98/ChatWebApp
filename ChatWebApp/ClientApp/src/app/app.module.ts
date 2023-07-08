@@ -30,6 +30,7 @@ import { AuthGuardService } from './_services/auth-guard.service';
 import { ConversationService } from './_services/conversation.service';
 import { ConversationDetailDialogComponent } from './components/conversation-detail-dialog/conversation-detail-dialog.component';
 import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import { DateAgoPipe } from './pipes/date-ago.pipe';
 @NgModule({
   imports: [
     BrowserModule,
@@ -64,6 +65,7 @@ import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angula
     SuggestionsComponent,
     MessagesComponent,
     ConversationDetailDialogComponent,
+    DateAgoPipe,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

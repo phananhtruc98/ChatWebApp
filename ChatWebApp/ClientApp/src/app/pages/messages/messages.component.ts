@@ -35,7 +35,10 @@ export class MessagesComponent {
   }
   getConversations(){
     this._conversationService.getConversations().subscribe((rs) => {
-      this.conversations = rs;
+      this.conversations = rs.sort((a, b) =>
+      {
+        return +new Date(b.lastSent) - +new Date(a.lastSent);
+      });
       console.log(this.conversations);
     })
   }
@@ -77,5 +80,10 @@ export class MessagesComponent {
     let dialogRef = this.dialog.open(ConversationDetailDialogComponent, {
       data: this.currentConversationDetail,
     });
+  }
+  isToday(dateString: string): boolean{
+    const today = new Date();
+    const date = new Date(dateString);
+    return (today.toDateString() == date.toDateString());
   }
 }
