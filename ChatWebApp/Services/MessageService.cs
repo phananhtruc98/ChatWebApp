@@ -18,12 +18,14 @@ namespace ChatAppAPI.Services
 
         private DataContext _context;
         private readonly IMapper _mapper;
-        private IHubContext<AccountHub> _accountHub;
-        public MessageService(DataContext context, IMapper mapper, IHubContext<AccountHub> accountHub)
+        //private IHubContext<AccountHub> _accountHub;
+        public MessageService(DataContext context, IMapper mapper
+            //IHubContext<AccountHub> accountHub
+            )
         {
             _context = context;
             _mapper = mapper;
-            _accountHub = accountHub;
+            //_accountHub = accountHub;
         }
         public async Task<Message> CreateMessage(Guid userId, MessageForCreation messageForCreation)
         {
@@ -43,7 +45,7 @@ namespace ChatAppAPI.Services
         {
             var participants = _context.ConversationParticipants.Where(x => x.ConversationId == conversationId).Select(p => p.Id);
 
-            var messages = _context.Messages.Where(m => participants.Contains(m.ConversationParticipantId));
+            var messages = _context.Messages.Include(x=>x.ConversationParticipant.User).Where(m => participants.Contains(m.ConversationParticipantId));
 
             var messageDtos = _mapper.Map<IEnumerable<MessageDto>>(messages);
 

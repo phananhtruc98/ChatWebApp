@@ -18,11 +18,12 @@ namespace ChatAppAPI.Entities
 
         public int RoleId { get; set; }
         public Role Role { get; set; }
+        public bool? IsOnline { get; set; }
 
 
         public List<ConversationParticipant>? ConversationParticipants { get; } = new();
 
         public List<UserContact>? Contacts { get; set; }
-
+        public ICollection<Connection> Connections { get; set; }
     }
 }

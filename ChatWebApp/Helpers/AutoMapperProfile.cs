@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatAppAPI.Dtos.Connection;
 using ChatAppAPI.Dtos.Conversation;
 using ChatAppAPI.Dtos.Message;
 using ChatAppAPI.Dtos.UserContact;
@@ -31,6 +32,7 @@ namespace ChatAppAPI.Helpers
             CreateMap<User, UserContactDto>();
             CreateMap<Conversation, ConversationDto>();
             CreateMap<Message, MessageDto>();
+            CreateMap<Connection, ConnectionDto>().ReverseMap();
             //CreateMap<UserContactDto, UserContact>().ForMember(d => d.Contact, opt => opt.MapFrom(s => s));
         }
     }

@@ -9,5 +9,6 @@ namespace ChatAppAPI.Dtos.UserContact
         public string Email { get; set; }
         public string Avatar { get; set; }
         public string Bio { get; set; }
+        public string IsOnline { get; set; }
     }
 }

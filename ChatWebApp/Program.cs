@@ -66,7 +66,7 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
            .WithOrigins("http://localhost:4200");
 }));
 builder.Services.AddSignalR();
-builder.Services.AddSingleton<DataContext>();
+builder.Services.AddTransient<DataContext>();
 builder.Services.AddSingleton<
     IAuthorizationMiddlewareResultHandler, AuthorizationMiddleWare>();
 builder.Services.AddSingleton<IJwtUtils, JwtUtils>();
@@ -75,6 +75,7 @@ builder.Services.AddScoped<IUserContactService, UserContactService>();
 builder.Services.AddScoped<IConversationService, ConversationService>();
 builder.Services.AddScoped<IConversationParticipantService, ConversationParticipantService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IConnectionService, ConnectionService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -99,4 +100,5 @@ app.UseMiddleware<ErrorHandlerMiddleware>();
 //});
 app.MapControllers();
 app.MapHub<AccountHub>("/accountHub");
+app.MapHub<ChatHub>("/chatHub");
 app.Run();

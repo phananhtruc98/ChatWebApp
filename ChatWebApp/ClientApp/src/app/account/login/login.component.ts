@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { first, tap } from 'rxjs';
 import { LoginUser } from 'src/app/_models/user';
 import { AccountService } from 'src/app/_services/account.service';
+import { SignalRService } from 'src/app/_services/signalr.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -18,7 +19,8 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private accountService: AccountService //private alertService: AlertService
+    private accountService: AccountService, //private alertService: AlertService
+    private _signalrService: SignalRService,
   ) {}
 
   ngOnInit() {
@@ -36,10 +38,6 @@ export class LoginComponent {
   onSubmit() {
     this.submitted = true;
 
-    // reset alerts on submit
-    //this.alertService.clear();
-
-    // stop here if form is invalid
     if (this.form.invalid) {
       return;
     }
@@ -49,7 +47,6 @@ export class LoginComponent {
       .login(this.form.value)
       .pipe(
         tap(
-          // Log the result or error
           {
             next: (data) => console.log(data),
             error: (error) => {
@@ -60,6 +57,9 @@ export class LoginComponent {
         )
       )
       .subscribe(() => {
+        this._signalrService.startConnection().then(() => {
+          console.log('User Connected');
+        })
         this.router.navigate(['../home'], { relativeTo: this.route });
       });
   }

@@ -47,6 +47,6 @@ namespace ChatAppAPI.Data
         public DbSet<ConversationParticipant> ConversationParticipants { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<UserContact> UserContacts { get; set; }
-
+        public DbSet<Connection> Connections { get; set; }
     }
 }

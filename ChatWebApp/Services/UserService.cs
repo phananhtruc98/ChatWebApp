@@ -1,6 +1,7 @@
 using AutoMapper;
 using ChatAppAPI.Authorization;
 using ChatAppAPI.Data;
+using ChatAppAPI.Dtos.Connection;
 using ChatAppAPI.Dtos.Conversation;
 using ChatAppAPI.Entities;
 using ChatAppAPI.Helpers;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Linq.Expressions;
+using Connection = ChatAppAPI.Entities.Connection;
 
 namespace ChatAppAPI.Services
 {
@@ -26,7 +28,8 @@ namespace ChatAppAPI.Services
         void Delete(Guid id);
         string Login(string username, string password);
         Task<Result> SaveAvatar(IFormFile file);
-        Task<User> UpdateAvatar(Guid id, string avatar);        
+        Task<User> UpdateAvatar(Guid id, string avatar);
+        Task UpdateOnlineStatus(Guid userId, bool isOnline, ConnectionDto connectionDto);
     }
 
     public class UserService : IUserService
@@ -159,6 +162,26 @@ namespace ChatAppAPI.Services
             };
             Result resp = imageKit.Upload(ob2);
             return resp;
+        }
+        public async Task UpdateOnlineStatus(Guid userId, bool isOnline, ConnectionDto connectionDto)
+        {
+            try
+            {
+                var connection = _mapper.Map<Connection>(connectionDto);
+                var user = _context.Users.Find(userId);
+                if (user != null)
+                {
+                    user.IsOnline = isOnline;
+                    user.Connections = new List<Connection>();                    
+                    user.Connections.Add(connection);
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

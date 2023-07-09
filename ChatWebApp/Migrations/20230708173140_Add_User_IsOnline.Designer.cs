@@ -4,6 +4,7 @@ using ChatAppAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatAppAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230708173140_Add_User_IsOnline")]
+    partial class Add_User_IsOnline
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,28 +24,6 @@ namespace ChatAppAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ChatAppAPI.Entities.Connection", b =>
-                {
-                    b.Property<string>("ConnectionID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Connected")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserAgent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ConnectionID");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Connections");
-                });
 
             modelBuilder.Entity("ChatAppAPI.Entities.Conversation", b =>
                 {
@@ -172,7 +153,7 @@ namespace ChatAppAPI.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsOnline")
+                    b.Property<bool>("IsOnline")
                         .HasColumnType("bit");
 
                     b.Property<string>("PasswordHash")
@@ -210,13 +191,6 @@ namespace ChatAppAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserContacts");
-                });
-
-            modelBuilder.Entity("ChatAppAPI.Entities.Connection", b =>
-                {
-                    b.HasOne("ChatAppAPI.Entities.User", null)
-                        .WithMany("Connections")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("ChatAppAPI.Entities.ConversationParticipant", b =>
@@ -293,8 +267,6 @@ namespace ChatAppAPI.Migrations
 
             modelBuilder.Entity("ChatAppAPI.Entities.User", b =>
                 {
-                    b.Navigation("Connections");
-
                     b.Navigation("Contacts");
 
                     b.Navigation("ConversationParticipants");

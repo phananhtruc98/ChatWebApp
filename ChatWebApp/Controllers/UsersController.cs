@@ -89,7 +89,5 @@ namespace ChatAppAPI.Controllers
             }
             return NoContent();
         }
-
-        
     }
 }

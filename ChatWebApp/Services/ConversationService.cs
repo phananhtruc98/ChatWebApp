@@ -16,7 +16,7 @@ namespace ChatAppAPI.Services
     }
     public class ConversationService : IConversationService
     {
-        private DataContext _context;
+        private readonly DataContext _context;
         private readonly IMapper _mapper;
         private IHubContext<AccountHub> _accountHub;
         public ConversationService(DataContext context, IMapper mapper, IHubContext<AccountHub> accountHub)
@@ -64,9 +64,9 @@ namespace ChatAppAPI.Services
             foreach (var conversation in conversations)
             {
                 var conversationDto = _mapper.Map<ConversationDto>(conversation);
-                var lastMessage = _context.Messages.Where(x=>x.ConversationParticipant.ConversationId == conversationDto.Id).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+                var lastMessage = _context.Messages.Where(x=>x.ConversationParticipant.ConversationId == conversationDto.Id).Include(x => x.CreatedBy).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
                 conversationDto.LastMessage = lastMessage.Content;
-                conversationDto.LastSender = lastMessage.CreatedBy.FullName;
+                conversationDto.LastSender = lastMessage.CreatedBy?.FullName;
                 conversationDto.LastSent = lastMessage.CreatedDate;
                 conversationDtos.Add(conversationDto);
             }

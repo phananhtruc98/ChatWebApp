@@ -4,16 +4,20 @@ import { User, UserProfile } from '../_models/user';
 import { Subject } from 'rxjs/internal/Subject';
 import { Observable } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
-
+import { AccountService } from './account.service';
+import { Injectable } from '@angular/core';
+@Injectable()
 export class SignalRService {
   private hubConnection: any;
   private $allFeed: Subject<UserProfile> = new Subject<UserProfile>();
+  constructor() {}
   public startConnection() {
     return new Promise((resolve, reject) => {
       this.hubConnection = new HubConnectionBuilder()
         .withUrl('https://localhost:44305/accountHub', {
           skipNegotiation: true,
           transport: signalR.HttpTransportType.WebSockets,
+          accessTokenFactory: () =>  JSON.parse(localStorage.getItem('user')!).token
         })
         .build();
 
@@ -30,7 +34,9 @@ export class SignalRService {
     });
   }
 
-  constructor() {}
+  public closeConnection(){
+    this.hubConnection?.stop();
+  }
 
   public get AllContactsObservable(): Observable<any> {
     return this.$allFeed.asObservable();
@@ -41,4 +47,5 @@ export class SignalRService {
       this.$allFeed.next(res);
     });
   }
+
 }

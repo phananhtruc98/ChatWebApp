@@ -24,16 +24,12 @@ export class ContactsComponent {
     this.currentUser = JSON.parse(localStorage.getItem('user')!)
   }
   ngOnInit() {
-    this._signalrService.startConnection().then(() => {
-      console.log('connected');
       this._signalrService.listenToUpdateProfile();
       this._signalrService.AllContactsObservable.subscribe((res: any) => {
-        console.log(res);
         if (res.id == this.selectedContact.id) {
           this.selectedContact = res;
         }
       });
-    });
   }
   getContacts() {
     this._userContactService.getContacts().subscribe((rs) => {
@@ -41,9 +37,7 @@ export class ContactsComponent {
     });
   }
   selectContact(user: any) {
-    console.log(user);
     this.selectedContact = user;
-    console.log(user);
   }
 
   createChat() {
