@@ -17,4 +17,5 @@ export class UserProfile {
   email?: string;
   isFemale?: boolean;
   dateOfBirth?: Date;
+  isOnline?: boolean;
 }

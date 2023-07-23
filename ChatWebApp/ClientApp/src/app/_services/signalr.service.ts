@@ -1,41 +1,36 @@
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnection } from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
 import { User, UserProfile } from '../_models/user';
 import { Subject } from 'rxjs/internal/Subject';
 import { Observable } from 'rxjs';
 import * as signalR from '@microsoft/signalr';
-import { AccountService } from './account.service';
 import { Injectable } from '@angular/core';
+import { Message } from '../_models/message';
 @Injectable()
 export class SignalRService {
-  private hubConnection: any;
+  private accountHubConnection: HubConnection;
+  private chatHubConnection: HubConnection;
   private $allFeed: Subject<UserProfile> = new Subject<UserProfile>();
-  constructor() {}
-  public startConnection() {
-    return new Promise((resolve, reject) => {
-      this.hubConnection = new HubConnectionBuilder()
-        .withUrl('https://localhost:44305/accountHub', {
-          skipNegotiation: true,
-          transport: signalR.HttpTransportType.WebSockets,
-          accessTokenFactory: () =>  JSON.parse(localStorage.getItem('user')!).token
-        })
-        .build();
-
-      this.hubConnection
-        .start()
-        .then(() => {
-          console.log('connection established');
-          return resolve(true);
-        })
-        .catch((err: any) => {
-          console.log('error occured' + err);
-          reject(err);
-        });
-    });
+  private $message: Subject<Message> = new Subject<Message>();
+  constructor() {
+    this.chatHubConnection= new signalR.HubConnectionBuilder()
+    .withUrl(environment.apiUrl + '/chatHub')
+    .build();
+    this.chatHubConnection.start().then(() => {
+      console.log('Chat Hub connected:' + this.chatHubConnection.connectionId);
+      this.listenToNewMessage();
+    })
+    this.accountHubConnection= new signalR.HubConnectionBuilder()
+    .withUrl(environment.apiUrl + '/accountHub')
+    .build();
+    this.accountHubConnection.start().then(() => {
+      console.log('Account Hub connected:' + this.accountHubConnection.connectionId);
+      this.listenToUpdateProfile();
+    })
   }
 
-  public closeConnection(){
-    this.hubConnection?.stop();
+  public closeConnection() {
+    this.accountHubConnection?.stop();
   }
 
   public get AllContactsObservable(): Observable<any> {
@@ -43,9 +38,17 @@ export class SignalRService {
   }
 
   public listenToUpdateProfile() {
-    (<HubConnection>this.hubConnection).on('UpdateProfile', (res) => {
+    (<HubConnection>this.accountHubConnection).on('UpdateProfile', (res) => {
       this.$allFeed.next(res);
     });
   }
 
+  public listenToNewMessage() {
+    (<HubConnection>this.chatHubConnection).on('SendMessage', (res) => {
+      this.$message.next(res);
+    });
+  }
+  public get MessageObservable(): Observable<any> {
+    return this.$message.asObservable();
+  }
 }

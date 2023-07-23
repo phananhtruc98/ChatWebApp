@@ -24,9 +24,8 @@ export class ContactsComponent {
     this.currentUser = JSON.parse(localStorage.getItem('user')!)
   }
   ngOnInit() {
-      this._signalrService.listenToUpdateProfile();
       this._signalrService.AllContactsObservable.subscribe((res: any) => {
-        if (res.id == this.selectedContact.id) {
+        if (res.id == this.selectedContact?.id) {
           this.selectedContact = res;
         }
       });

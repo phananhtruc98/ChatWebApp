@@ -27,7 +27,7 @@ namespace ChatAppAPI.Helpers
                         return true;
                     }
                 ));
-            CreateMap<MessageForCreation, Message>();
+            CreateMap<MessageForCreation, Message>().ReverseMap();
 
             CreateMap<User, UserContactDto>();
             CreateMap<Conversation, ConversationDto>();

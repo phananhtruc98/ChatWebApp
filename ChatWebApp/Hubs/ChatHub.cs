@@ -6,7 +6,7 @@ namespace ChatAppAPI.Hubs
 {
     public interface IChatHub
     {
-        Task<Message> SendMessage(Guid userId, MessageForCreation messageForCreation);
+        Task SendMessage(MessageForCreation createdMessage);
     }
     public class ChatHub: Hub<IChatHub>
     {

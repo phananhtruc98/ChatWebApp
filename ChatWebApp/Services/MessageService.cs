@@ -10,7 +10,7 @@ namespace ChatAppAPI.Services
 {
     public interface IMessageService
     {
-        Task<Message> CreateMessage(Guid userId, MessageForCreation messageForCreation);
+        Task<MessageForCreation> CreateMessage(Guid userId, MessageForCreation messageForCreation);
         Task<IEnumerable<MessageDto>> GetMessageByConversationId(Guid conversationId);
     }
     public class MessageService : IMessageService
@@ -18,16 +18,13 @@ namespace ChatAppAPI.Services
 
         private DataContext _context;
         private readonly IMapper _mapper;
-        //private IHubContext<AccountHub> _accountHub;
-        public MessageService(DataContext context, IMapper mapper
-            //IHubContext<AccountHub> accountHub
+        public MessageService(DataContext context, IMapper mapper, IHubContext<ChatHub> chatHub
             )
         {
             _context = context;
             _mapper = mapper;
-            //_accountHub = accountHub;
         }
-        public async Task<Message> CreateMessage(Guid userId, MessageForCreation messageForCreation)
+        public async Task<MessageForCreation> CreateMessage(Guid userId, MessageForCreation messageForCreation)
         {
             var message = _mapper.Map<Message>(messageForCreation);
             if (_context.Messages == null)
@@ -39,7 +36,8 @@ namespace ChatAppAPI.Services
             message.CreatedBy = user;
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
-            return message;
+            var resMessage = _mapper.Map<MessageForCreation>(message);
+            return resMessage;
         }
         public async Task<IEnumerable<MessageDto>> GetMessageByConversationId(Guid conversationId)
         {

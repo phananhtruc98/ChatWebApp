@@ -57,9 +57,6 @@ export class LoginComponent {
         )
       )
       .subscribe(() => {
-        this._signalrService.startConnection().then(() => {
-          console.log('User Connected');
-        })
         this.router.navigate(['../home'], { relativeTo: this.route });
       });
   }

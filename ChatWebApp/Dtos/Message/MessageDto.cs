@@ -9,10 +9,11 @@ namespace ChatAppAPI.Dtos.Message
         public User? CreatedBy { get; set; }
     }
 
-    public class MessageForCreation
+    public class MessageForCreation: MessageDto
     {
+        public Guid Id { get; set; }
         public string Content { get; set; }
-
         public Guid? ConversationParticipantId { get; set; }
+        public Guid? ConversationId { get; set;}
     }
 }

@@ -12,6 +12,8 @@ using System.Security.Claims;
 using ChatAppAPI.Services;
 using ChatAppAPI.Dtos.Message;
 using ChatAppAPI.Dtos.Conversation;
+using ChatAppAPI.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ChatAppAPI.Controllers
 {
@@ -23,12 +25,13 @@ namespace ChatAppAPI.Controllers
         private readonly IConversationService _conversationService;
         private readonly IMessageService _messageService;
         private readonly IConversationParticipantService _conversationParticipantService;
-
-        public ConversationController(IConversationService conversationService, IMessageService messageService, IConversationParticipantService conversationParticipantService)
+        private IHubContext<ChatHub> _chatHub;
+        public ConversationController(IConversationService conversationService, IMessageService messageService, IConversationParticipantService conversationParticipantService, IHubContext<ChatHub> chatHub)
         {
             _conversationService = conversationService;
             _messageService = messageService;
             _conversationParticipantService = conversationParticipantService;
+            _chatHub = chatHub;
         }
 
         [HttpGet("conversations")]
@@ -62,7 +65,11 @@ namespace ChatAppAPI.Controllers
                 var userId = Guid.Parse(HttpContext.User.FindFirstValue("userId"));
                 
                 var createdMessage = await _messageService.CreateMessage(userId, messageForCreation);
-                
+
+                var conversationId = await _conversationService.GetConversationIdByMessageId(createdMessage.Id);
+                createdMessage.ConversationId = conversationId;
+                await _chatHub.Clients.All.SendAsync("SendMessage", createdMessage);
+
                 return Ok(createdMessage);
             }
             catch (Exception ex)

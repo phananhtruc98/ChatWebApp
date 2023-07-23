@@ -23,7 +23,7 @@ namespace ChatAppAPI.Services
         public async Task DeleteAsync(string connectionId)
         {
             var connection = _context.Connections.Find(connectionId);
-            var user = _context.Users.Find(connection.UserId);
+            var user = _context.Users.Find(connection?.UserId);
             user.IsOnline = false;
             _context.Update(user);
             _context.Remove(connection);

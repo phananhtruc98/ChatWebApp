@@ -13,17 +13,16 @@ namespace ChatAppAPI.Services
         Task<Conversation> CreateConversation(Conversation conversationForCreationDto);
         Task<IEnumerable<ConversationDto>> GetConversations(Guid userId);
         Task<ConversationInfoDto> GetConversation(Guid id);
+        Task<Guid> GetConversationIdByMessageId(Guid messageId);
     }
     public class ConversationService : IConversationService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        private IHubContext<AccountHub> _accountHub;
-        public ConversationService(DataContext context, IMapper mapper, IHubContext<AccountHub> accountHub)
+        public ConversationService(DataContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _accountHub = accountHub;
         }
         public async Task<Conversation> CreateConversation(Conversation conversation)
         {
@@ -72,6 +71,13 @@ namespace ChatAppAPI.Services
             }
 
             return conversationDtos;
+        }
+
+        public async Task<Guid> GetConversationIdByMessageId(Guid messageId)
+        {
+            var message = _context.Messages.FirstOrDefault(x => x.Id == messageId);
+            var conversationParticipant = _context.ConversationParticipants.FirstOrDefault(x=> x.Id == message.ConversationParticipantId);
+            return conversationParticipant.ConversationId;
         }
     }
 }

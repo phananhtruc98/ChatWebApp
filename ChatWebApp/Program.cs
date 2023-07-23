@@ -3,6 +3,7 @@ using ChatAppAPI.Data;
 using ChatAppAPI.Helpers;
 using ChatAppAPI.Hubs;
 using ChatAppAPI.Services;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Options;
