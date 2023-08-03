@@ -26,21 +26,17 @@ export class ProfileComponent {
   ) {
     this.accountService.user.subscribe((x) => {
       if (x) {
-        console.log(x);
         this.userId = x.id;
       }
     });
     const currentYear = new Date().getFullYear();
     this.minDate = new Date(currentYear - 100, 0, 1);
     this.maxDate = new Date(currentYear - 18, 11, 31);
-    console.log(this.minDate);
-    console.log(this.maxDate);
     this.ngOninit();
   }
   ngOninit() {
     this.accountService.getById(this.userId).subscribe((x) => {
       if (x) {
-        console.log(x);
         this.user = x;
         this.form = this.formBuilder.group({
           fullName: [this.user.fullName, Validators.required],
@@ -61,10 +57,8 @@ export class ProfileComponent {
   }
   changeProfilePicture() {
     this.isChangeProfilePictureShown = !this.isChangeProfilePictureShown;
-    console.log(this.isChangeProfilePictureShown);
   }
   onFilechange(event: any) {
-    console.log(event.target.files[0]);
     this.file = event.target.files[0];
   }
 

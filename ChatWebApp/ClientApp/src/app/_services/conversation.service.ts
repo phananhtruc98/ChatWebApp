@@ -8,8 +8,8 @@ import { Conversation, ConversationDto, ConversationInfoDto } from '../_models/c
 export class ConversationService {
   constructor(private http: HttpClient) {}
 
-  public createFirstMessage(firstMessage: FirstMessageForCreation): Observable<Message> {
-    return this.http.post<Message>(`${environment.apiUrl}/Conversation/first-message`, firstMessage);
+  public createFirstMessage(firstMessage: FirstMessageForCreation): Observable<FirstMessageForCreation> {
+    return this.http.post<FirstMessageForCreation>(`${environment.apiUrl}/Conversation/first-message`, firstMessage);
   }
 
   public getConversations(){

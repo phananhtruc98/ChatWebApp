@@ -28,7 +28,6 @@ export class SuggestionsComponent {
       .pipe(
         map((response) => {
           if (response) {
-            console.log(response);
             this.users = response;
           }
         })
@@ -52,7 +51,6 @@ export class SuggestionsComponent {
       });
   }
   selectSuggestion(user: UserProfile) {
-    console.log(user);
     this.selectedSuggestion = user;
   }
 }

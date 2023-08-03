@@ -4,7 +4,7 @@ export class Message {
   id?: string;
   content?: string;
   conversationParticipantId?: string;
-  createdDate?: Date;
+  createdDate!: Date;
   modifiedDate?: Date;
   createdBy?: UserProfile;
 }
@@ -16,4 +16,5 @@ export class FirstMessageForCreation
   participants?: string[];
   avatar?: string;
   sender?: string;
+  conversationId?: string;
 }

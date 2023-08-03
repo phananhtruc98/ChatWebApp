@@ -79,47 +79,59 @@ namespace ChatAppAPI.Controllers
         }
 
         [HttpPost("first-message")]
-        public async Task<ActionResult<Message>> FirstMessage(FirstMessageForCreationDto firstMessageForCreationDto)
+        public async Task<ActionResult<MessageForCreation>> FirstMessage(FirstMessageForCreationDto firstMessageForCreationDto)
         {
             try
             {
                 var userId = Guid.Parse(HttpContext.User.FindFirstValue("userId"));
-                // create conversation
-                var conversation = new Conversation();
-                if (string.IsNullOrEmpty(firstMessageForCreationDto.Name))
+                // check if conversation has been created.
+                var userIds = firstMessageForCreationDto.Participants.Select(x => Guid.Parse(x)).ToList();
+                var existingConversation = await _conversationParticipantService.GetConversationByParticipants(userIds);
+                var senderParticipantId = Guid.Empty;
+                if (existingConversation == null)
                 {
-                    // WILL CONSIDER WHERE TO HANLE IT 
-                    //var contact = _userService.GetById(firstMessageForCreationDto.ContactId);
-                    //var user = _userService.GetById(userId);
-                    //string nameChat = $"{contact.FullName}, {user.FullName}";
-                    //conversation.Name = nameChat;
-                }
-                conversation.Name = firstMessageForCreationDto.Name;
-                if (string.IsNullOrEmpty(firstMessageForCreationDto.Avatar))
-                {
-                    conversation.Avatar = "default-avatar.png";
-                }
-                var createdConversation = await _conversationService.CreateConversation(conversation);
+                    var conversation = new Conversation();
+                    if (string.IsNullOrEmpty(firstMessageForCreationDto.Name))
+                    {
+                        // WILL CONSIDER WHERE TO HANLE IT 
+                        //var contact = _userService.GetById(firstMessageForCreationDto.ContactId);
+                        //var user = _userService.GetById(userId);
+                        //string nameChat = $"{contact.FullName}, {user.FullName}";
+                        //conversation.Name = nameChat;
+                    }
+                    conversation.Name = firstMessageForCreationDto.Name;
+                    if (string.IsNullOrEmpty(firstMessageForCreationDto.Avatar))
+                    {
+                        conversation.Avatar = "default-avatar.png";
+                    }
+                    existingConversation = await _conversationService.CreateConversation(conversation);
 
-                List<(string, Guid)> userList = new List<(string, Guid)>();
+                    List<(string, Guid)> userList = new List<(string, Guid)>();
 
-                // Create ConversationParticipant
-                foreach (var participantUserId in firstMessageForCreationDto.Participants)
-                {
-                    var userParticipant = new ConversationParticipant();
-                    userParticipant.ConversationId = createdConversation.Id;
-                    userParticipant.UserId = Guid.Parse(participantUserId);
-                    var createdParticipant = await _conversationParticipantService.CreateConversationParticipant(userParticipant);
-                    var rs = (participantUserId, createdParticipant.Id);
-                    userList.Add(rs);
+                    // Create ConversationParticipant
+                    foreach (var participantUserId in firstMessageForCreationDto.Participants)
+                    {
+                        var userParticipant = new ConversationParticipant();
+                        userParticipant.ConversationId = existingConversation.Id;
+                        userParticipant.UserId = Guid.Parse(participantUserId);
+                        var createdParticipant = await _conversationParticipantService.CreateConversationParticipant(userParticipant);
+                        var rs = (participantUserId, createdParticipant.Id);
+                        userList.Add(rs);
+                    }
+                    senderParticipantId = userList.Find(x => x.Item1 == firstMessageForCreationDto.Sender).Item2;
                 }
+                else
+                {
+                    senderParticipantId = (await _conversationParticipantService.GetParticipantIdByConversationIdAndUserId(existingConversation.Id, userId)).Id;
+                }                
                 // Create message
-                var senderParticipantId = userList.Find(x => x.Item1 == firstMessageForCreationDto.Sender).Item2;
+                
                 var message = new MessageForCreation();
+                message.ConversationId = existingConversation.Id;
                 message.ConversationParticipantId = senderParticipantId;
                 message.Content = firstMessageForCreationDto.Content;
                 var createdMessage = await _messageService.CreateMessage(userId, message);
-                return Ok(createdMessage);
+                return Ok(message);
             }
             catch (Exception ex)
             {

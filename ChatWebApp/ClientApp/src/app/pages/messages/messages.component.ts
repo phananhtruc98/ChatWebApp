@@ -17,6 +17,7 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { SignalRService } from 'src/app/_services/signalr.service';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.component.html',
@@ -31,23 +32,24 @@ export class MessagesComponent {
   conversations!: ConversationDto[];
   currentMessages!: Message[];
   currentText!: string;
-  currentParticipantId?: string;
+  currentParticipantId!: string;
   currentConversationDetail?: ConversationInfoDto;
   public messageReceived: EventEmitter<Message>;
   constructor(
     private _userContactService: UserContactService,
     private _conversationService: ConversationService,
     public dialog: MatDialog,
-    private _signalrService: SignalRService
+    private _signalrService: SignalRService,
+    private route: ActivatedRoute
   ) {
     this.currentUser = JSON.parse(localStorage.getItem('user')!);
     this.messageReceived = new EventEmitter<Message>();
   }
 
   ngOnInit() {
+    this.currentParticipantId = this.route.snapshot.paramMap.get('selectedConversationId')!;
     this.getConversations();
     this._signalrService.MessageObservable.subscribe((res: any) => {
-      console.log(res);
       const conv: ConversationDto | undefined = this.conversations.find(
         (x) => x.id == res.conversationId
       );
@@ -84,6 +86,10 @@ scrollToBottom(): void {
   }
   getConversations() {
     this._conversationService.getConversations().subscribe((rs) => {
+      if(this.currentParticipantId){
+        const a = rs.find(c => c.id === this.currentParticipantId);
+        this.selectConversation(a);
+      }
       this.conversations = rs.sort((a, b) => {
         return +new Date(b.lastSent) - +new Date(a.lastSent);
       });
@@ -95,31 +101,27 @@ scrollToBottom(): void {
       this._conversationService
         .getConversation(this.selectedConversation.id)
         .subscribe((rs) => {
-          console.log(rs);
           this.currentConversationDetail = rs;
           this.getMessages(conversation.id);
           this.currentParticipantId = rs.participants?.find(
             (x) => x.userId == this.currentUser.id
-          )?.id;
-          console.log(this.currentParticipantId);
+          )?.id!;
         });
     }
   }
   getMessages(conversationId: string) {
     this._conversationService.getMessages(conversationId).subscribe((rs) => {
-      this.currentMessages = rs;
-      console.log(this.currentMessages);
+      this.currentMessages = rs.sort((b: Message, a: Message) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
     });
   }
   sendMessage() {
     console.log(this.currentText);
-    let newMessage: Message = {};
+    let newMessage: Message = { createdDate: new Date()};
     if (this.currentText) {
       newMessage.content = this.currentText;
       newMessage.conversationParticipantId = this.currentParticipantId;
     }
     this._conversationService.sendMessage(newMessage).subscribe((rs) => {
-      console.log('Send successfully');
       this.currentText = '';
     });
   }

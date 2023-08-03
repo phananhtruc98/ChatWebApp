@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs';
 import { FirstMessageForCreation } from 'src/app/_models/message';
 import { User, UserProfile } from 'src/app/_models/user';
@@ -18,7 +19,9 @@ export class ContactsComponent {
   constructor(
     private _userContactService: UserContactService,
     private _signalrService: SignalRService,
-    private _conversationService: ConversationService
+    private _conversationService: ConversationService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {
     this.getContacts();
     this.currentUser = JSON.parse(localStorage.getItem('user')!)
@@ -48,8 +51,8 @@ export class ContactsComponent {
       newMessage.participants.push(this.selectedContact.id, this.currentUser.id);
       newMessage.sender = this.currentUser.id;
     }
-    this._conversationService.createFirstMessage(newMessage).subscribe(()=>{
-      console.log('Created successfully')
+    this._conversationService.createFirstMessage(newMessage).subscribe((res)=>{
+      this.router.navigate(['/messages', { selectedConversationId: res?.conversationId }]);
     });
   }
 }

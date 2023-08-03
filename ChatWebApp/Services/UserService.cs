@@ -38,12 +38,14 @@ namespace ChatAppAPI.Services
         private readonly IMapper _mapper;
         private readonly IJwtUtils _jwtUtils;
         private IHubContext<AccountHub> _accountHub;
-        public UserService(DataContext context, IMapper mapper, IJwtUtils jwtUtils, IHubContext<AccountHub> accountHub)
+        private IConnectionService _connectionService;
+        public UserService(DataContext context, IMapper mapper, IJwtUtils jwtUtils, IHubContext<AccountHub> accountHub, IConnectionService connectionService)
         {
             _context = context;
             _mapper = mapper;
             _jwtUtils = jwtUtils;
             _accountHub = accountHub;
+            _connectionService = connectionService;
         }
 
         public IEnumerable<User> GetAll()
@@ -167,14 +169,12 @@ namespace ChatAppAPI.Services
         {
             try
             {
-                var connection = _mapper.Map<Connection>(connectionDto);
+                
                 var user = _context.Users.Find(userId);
                 if (user != null)
                 {
                     user.IsOnline = isOnline;
-                    user.Connections = new List<Connection>();                    
-                    user.Connections.Add(connection);
-                    _context.Update(user);
+                    await _connectionService.AddAsync(connectionDto);
                     await _context.SaveChangesAsync();
                 }
             }
