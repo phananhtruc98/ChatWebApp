@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Linq.Expressions;
+using System.Net;
 using Connection = ChatAppAPI.Entities.Connection;
 
 namespace ChatAppAPI.Services
@@ -162,6 +163,13 @@ namespace ChatAppAPI.Services
                 file = base64String,
                 fileName = Guid.NewGuid().ToString()
             };
+
+            HttpClientHandler handler = new HttpClientHandler();
+            IWebProxy proxy = WebRequest.GetSystemWebProxy();
+            proxy.Credentials = CredentialCache.DefaultNetworkCredentials;
+            handler.UseDefaultCredentials = true;
+            handler.Proxy = proxy;
+
             Result resp = imageKit.Upload(ob2);
             return resp;
         }
