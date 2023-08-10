@@ -63,7 +63,7 @@ namespace ChatAppAPI.Services
             foreach (var conversation in conversations)
             {
                 var conversationDto = _mapper.Map<ConversationDto>(conversation);
-                var lastMessage = _context.Messages.Where(x=>x.ConversationParticipant.ConversationId == conversationDto.Id).Include(x => x.CreatedBy).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
+                var lastMessage = _context.Messages.Where(x => x.ConversationParticipant.ConversationId == conversationDto.Id).Include(x => x.CreatedBy).OrderByDescending(x => x.CreatedDate).FirstOrDefault();
                 conversationDto.LastMessage = lastMessage.Content;
                 conversationDto.LastSender = lastMessage.CreatedBy?.FullName;
                 conversationDto.LastSent = lastMessage.CreatedDate;

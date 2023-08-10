@@ -5,11 +5,11 @@
     <mat-sidenav mode="side" opened fixedInViewport="true" fixedTopGap="120">
         <div class="m-3 user-block" *ngFor="let user of userContacts; index as i; first as isFirst" (click)="selectContact(user)">
 
-            <!-- <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{user.avatar}}" [transformation]='[{
+            <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{user.avatar}}" [transformation]='[{
 "height": "60",
 "width": "60"
 }]'>
-            </ik-image> -->
+            </ik-image>
             <span class="text">{{user.fullName}}</span>
         </div>
     </mat-sidenav>

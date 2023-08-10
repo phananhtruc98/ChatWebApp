@@ -1,11 +1,11 @@
 <div class="card" *ngIf="user">
     <div class="card-header">Update Profile</div>
     <div class="card-body">
-        <!-- <ik-image path="/{{user.avatar}}" [transformation]='[{
+        <ik-image path="/{{user.avatar}}" [transformation]='[{
   "height": "200",
   "width": "200"
 }]'>
-        </ik-image> -->
+        </ik-image>
         <div class="mb-3" *ngIf="!this.isChangeProfilePictureShown">
             <label for="formFile" class="form-label">Upload file example</label>
             <input (change)="this.onFilechange($event)" class="form-control" type="file" id="formFile">

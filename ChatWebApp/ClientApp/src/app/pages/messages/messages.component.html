@@ -30,8 +30,11 @@
 </mat-sidenav-container> -->
 <section class="gradient-custom">
     <div class="container py-5">
+        <div class="row" *ngIf="conversations.length==0">
+            Let's get the conversation started!
+        </div>
         <div class="row">
-            <div class="col-md-6 col-lg-5 col-xl-5 mb-4 mb-md-0">
+            <div class="col-md-6 col-lg-5 col-xl-5 mb-4 mb-md-0" *ngIf="conversations.length>0">
                 <h5 class="font-weight-bold mb-3 text-center text-white">Chats</h5>
                 <div class="card mask-custom">
                     <div class="card-body">
