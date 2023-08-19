@@ -29,7 +29,7 @@ import { SignalRService } from './_services/signalr.service';
 import { AuthGuardService } from './_services/auth-guard.service';
 import { ConversationService } from './_services/conversation.service';
 import { ConversationDetailDialogComponent } from './components/conversation-detail-dialog/conversation-detail-dialog.component';
-import {MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import { MatDialogModule} from '@angular/material/dialog';
 import { DateAgoPipe } from './pipes/date-ago.pipe';
 @NgModule({
   imports: [

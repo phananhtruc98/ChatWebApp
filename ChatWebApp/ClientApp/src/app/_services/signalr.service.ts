@@ -1,6 +1,6 @@
 import { HubConnection } from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
-import { User, UserProfile } from '../_models/user';
+import { UserProfile } from '../_models/user';
 import { Subject } from 'rxjs/internal/Subject';
 import { Observable } from 'rxjs';
 import * as signalR from '@microsoft/signalr';

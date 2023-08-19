@@ -1,21 +1,15 @@
 import { Component, ElementRef, EventEmitter, ViewChild } from '@angular/core';
-import { async } from 'rxjs';
 import {
   Conversation,
   ConversationDto,
   ConversationInfoDto,
 } from 'src/app/_models/conversation';
-import { FirstMessageForCreation, Message } from 'src/app/_models/message';
+import { Message } from 'src/app/_models/message';
 import { User, UserProfile } from 'src/app/_models/user';
 import { ConversationService } from 'src/app/_services/conversation.service';
 import { UserContactService } from 'src/app/_services/user-contact.service';
 import { ConversationDetailDialogComponent } from 'src/app/components/conversation-detail-dialog/conversation-detail-dialog.component';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogModule,
-} from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { SignalRService } from 'src/app/_services/signalr.service';
 import { ActivatedRoute } from '@angular/router';
 import UtilsService from 'src/app/_helpers/util';
@@ -83,10 +77,7 @@ export class MessagesComponent {
     return UtilsService.isEmpty(array);
   }
   scrollToBottom(): void {
-    try {
-      this.myScrollContainer.nativeElement.scrollTop =
-        this.myScrollContainer.nativeElement.scrollHeight;
-    } catch (err) {}
+    this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
   }
   getContacts() {
     this._userContactService.getContacts().subscribe((rs) => {
@@ -128,12 +119,12 @@ export class MessagesComponent {
     });
   }
   sendMessage() {
-    let newMessage: Message = { createdDate: new Date() };
+    const newMessage: Message = { createdDate: new Date() };
     if (this.currentText) {
       newMessage.content = this.currentText;
       newMessage.conversationParticipantId = this.currentParticipantId;
     }
-    this._conversationService.sendMessage(newMessage).subscribe((rs) => {
+    this._conversationService.sendMessage(newMessage).subscribe(() => {
       this.currentText = '';
     });
   }
@@ -142,7 +133,7 @@ export class MessagesComponent {
   }
 
   conversationDetails() {
-    let dialogRef = this.dialog.open(ConversationDetailDialogComponent, {
+    this.dialog.open(ConversationDetailDialogComponent, {
       data: this.currentConversationDetail,
     });
   }

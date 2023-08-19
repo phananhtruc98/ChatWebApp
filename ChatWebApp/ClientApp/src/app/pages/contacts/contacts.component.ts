@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map } from 'rxjs';
 import { FirstMessageForCreation } from 'src/app/_models/message';
 import { User, UserProfile } from 'src/app/_models/user';
 import { ConversationService } from 'src/app/_services/conversation.service';
@@ -43,7 +42,7 @@ export class ContactsComponent {
   }
 
   createChat() {
-    var newMessage: FirstMessageForCreation = {};
+    const newMessage: FirstMessageForCreation = {};
     newMessage.content = "Hi";
     newMessage.name = this.currentUser.fullName + ", " + this.selectedContact.fullName;
     if(this.selectedContact.id && this.currentUser.id){

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { first, tap } from 'rxjs';
-import { LoginUser } from 'src/app/_models/user';
+import { tap } from 'rxjs';
 import { AccountService } from 'src/app/_services/account.service';
 import { SignalRService } from 'src/app/_services/signalr.service';
 @Component({

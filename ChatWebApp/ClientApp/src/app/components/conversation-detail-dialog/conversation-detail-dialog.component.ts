@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
-import { Conversation, ConversationInfoDto } from 'src/app/_models/conversation';
-import {MatDialog, MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import { ConversationInfoDto } from 'src/app/_models/conversation';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import UtilsService from 'src/app/_helpers/util';
 
 @Component({

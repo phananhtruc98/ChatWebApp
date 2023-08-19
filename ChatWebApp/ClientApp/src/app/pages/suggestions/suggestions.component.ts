@@ -37,14 +37,14 @@ export class SuggestionsComponent {
 
   addContact(contactId: any) {
     this.isAddingContact = true;
-    var userId;
+    let userId;
     this.accountService.user?.subscribe((user) => {
       userId = user?.id;
     });
-    var userContactForCreation = { userId: userId, contactId: contactId };
+    const userContactForCreation = { userId: userId, contactId: contactId };
     this.userContactService
       .createUserContact(userContactForCreation)
-      .subscribe((response) => {
+      .subscribe(() => {
         this.isAddingContact = false;
         this.selectedSuggestion = undefined;
         alert('Add contact successfully');

@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { LoginUser, User } from '../_models/user';
 import { environment } from 'src/environments/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SignalRService } from './signalr.service';
 @Injectable({
@@ -89,7 +89,7 @@ export class AccountService {
     );
   }
   public uploadfile(file: File) {
-    let formParams = new FormData();
+    const formParams = new FormData();
     formParams.append('file', file);
     return this.http.post(`${environment.apiUrl}/users/avatar`, formParams);
   }

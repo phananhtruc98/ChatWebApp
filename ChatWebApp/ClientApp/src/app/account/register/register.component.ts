@@ -54,7 +54,7 @@ export class RegisterComponent {
           //this.alertService.success('Registration successful', { keepAfterRouteChange: true });
           this.router.navigate(['../login'], { relativeTo: this.route });
         },
-        error: (error: any) => {
+        error: () => {
           //this.alertService.error(error);
           this.loading = false;
         },
