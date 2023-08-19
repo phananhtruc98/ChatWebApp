@@ -1,6 +1,9 @@
 <div *ngIf="data" id="group-info-details">
     <div class="d-flex justify-content-center">
-        <ik-image path="/{{ data.avatar }}" class="rounded-circle ms-3 shadow-1-strong me-3" width="60 ">
+        <ik-image path="/{{ data.avatar }}" class="rounded-circle ms-3 shadow-1-strong me-3" [transformation]='[{
+          "height": "80",
+          "width": "80"
+          }]'>
         </ik-image>
     </div>
     <div class="group--name">{{ data.name }}</div>

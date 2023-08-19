@@ -6,9 +6,9 @@
         <div class="m-3 user-block" *ngFor="let user of users; index as i; first as isFirst" (click)="selectSuggestion(user)">
 
             <ik-image *ngIf="user.avatar" class="avatar-thumbnail" path="/{{user.avatar}}" [transformation]='[{
-  "height": "60",
-  "width": "60"
-}]'>
+              "height": "80",
+              "width": "80"
+              }]'>
             </ik-image>
             <span class="text">{{user.fullName}}</span>
         </div>
