@@ -46,6 +46,7 @@ namespace ChatAppAPI.Services
             ConversationInfoDto conversationInfoDto = new ConversationInfoDto();
             conversationInfoDto.Id = conversation.Id;
             conversationInfoDto.Name = conversation.Name;
+            conversationInfoDto.Avatar = conversation.Avatar;
             conversationInfoDto.Participants = participants.ToList();
             return conversationInfoDto;
         }

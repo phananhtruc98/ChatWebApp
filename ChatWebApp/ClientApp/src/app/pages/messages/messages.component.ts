@@ -18,6 +18,7 @@ import {
 } from '@angular/material/dialog';
 import { SignalRService } from 'src/app/_services/signalr.service';
 import { ActivatedRoute } from '@angular/router';
+import UtilsService from 'src/app/_helpers/util';
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.component.html',
@@ -47,7 +48,9 @@ export class MessagesComponent {
   }
 
   ngOnInit() {
-    this.currentParticipantId = this.route.snapshot.paramMap.get('selectedConversationId')!;
+    this.currentParticipantId = this.route.snapshot.paramMap.get(
+      'selectedConversationId'
+    )!;
     this.getConversations();
     this._signalrService.MessageObservable.subscribe((res: any) => {
       const conv: ConversationDto | undefined = this.conversations.find(
@@ -63,22 +66,28 @@ export class MessagesComponent {
           content: res.content,
           conversationParticipantId: res.conversationParticipantId,
           createdDate: res.createdDate,
-          createdBy: res.createdBy
+          createdBy: res.createdBy,
         });
       }
-      this.getConversations();
       this.scrollToBottom();
+      if (conv) {
+        this.conversations.splice(this.conversations.indexOf(conv), 1)[0];
+        this.conversations?.splice(0, 0, conv);
+      }
     });
   }
   ngAfterViewChecked() {
     this.scrollToBottom();
-}
-
-scrollToBottom(): void {
+  }
+  isEmpty(array: any): boolean {
+    return UtilsService.isEmpty(array);
+  }
+  scrollToBottom(): void {
     try {
-        this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-    } catch(err) { }
-}
+      this.myScrollContainer.nativeElement.scrollTop =
+        this.myScrollContainer.nativeElement.scrollHeight;
+    } catch (err) {}
+  }
   getContacts() {
     this._userContactService.getContacts().subscribe((rs) => {
       this.userContacts = rs;
@@ -86,8 +95,8 @@ scrollToBottom(): void {
   }
   getConversations() {
     this._conversationService.getConversations().subscribe((rs) => {
-      if(this.currentParticipantId){
-        const a = rs.find(c => c.id === this.currentParticipantId);
+      if (this.currentParticipantId) {
+        const a = rs.find((c) => c.id === this.currentParticipantId);
         this.selectConversation(a);
       }
       this.conversations = rs.sort((a, b) => {
@@ -111,12 +120,15 @@ scrollToBottom(): void {
   }
   getMessages(conversationId: string) {
     this._conversationService.getMessages(conversationId).subscribe((rs) => {
-      this.currentMessages = rs.sort((b: Message, a: Message) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+      this.currentMessages = rs.sort(
+        (b: Message, a: Message) =>
+          new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
+      );
+      console.log(this.currentMessages);
     });
   }
   sendMessage() {
-    console.log(this.currentText);
-    let newMessage: Message = { createdDate: new Date()};
+    let newMessage: Message = { createdDate: new Date() };
     if (this.currentText) {
       newMessage.content = this.currentText;
       newMessage.conversationParticipantId = this.currentParticipantId;
